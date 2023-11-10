@@ -11,8 +11,48 @@
         android:orientation="horizontal"
         android:layout_margin="10dp"
         android:padding="16dp"
+        android:id="@id/tapBar"
+        android:gravity="center">
+
+        <!-- 첫 번째 이미지 버튼 (왼쪽에 위치) -->
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="start"
+            android:scaleType="centerCrop"
+            android:src="@drawable/arrow_right_solid"
+            android:padding="10dp"/>
+
+        <!-- 텍스트뷰 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:text="My Plog"
+            android:textSize="40sp"
+            android:textStyle="bold"/>
+
+        <!-- 두 번째 이미지 버튼 (오른쪽에 위치) -->
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="end"
+            android:scaleType="centerCrop"
+            android:src="@drawable/arrow_right_solid"
+            android:padding="10dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="10dp"
+        android:padding="16dp"
         android:id="@+id/userInformation"
-        android:background="@drawable/rounded_inform">
+        android:background="@drawable/rounded_inform"
+        android:layout_below="@id/tapBar">
+
 
         <LinearLayout
             android:layout_width="0dp"
