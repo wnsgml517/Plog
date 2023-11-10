@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <RelativeLayout
+        android:id="@+id/map_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></RelativeLayout>
+
+
+    <LinearLayout
+        android:id="@+id/tapBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:padding="0dp">
+
+        <ImageButton
+            android:id="@+id/user_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="30dp"
+            android:adjustViewBounds="true"
+            android:background="@drawable/circular_background"
+            android:elevation="8dp"
+            android:maxWidth="50dp"
+            android:maxHeight="50dp"
+            android:padding="13dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/user_solid" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="end"
+            android:orientation="horizontal"
+            android:padding="40dp">
+
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/trash_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginEnd="16dp"
+                android:adjustViewBounds="true"
+                android:background="@drawable/circular_background"
+                android:elevation="8dp"
+                android:maxWidth="50dp"
+                android:maxHeight="50dp"
+                android:padding="13dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/trash_solid" />
+
+            <ImageButton
+                android:id="@+id/toilet_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/trash_button"
+                android:adjustViewBounds="true"
+                android:background="@drawable/circular_background"
+                android:elevation="8dp"
+                android:maxWidth="50dp"
+                android:maxHeight="50dp"
+                android:padding="13dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/toilet_solid" />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tapBar"
+        android:orientation="horizontal"
+        android:padding="40dp">
+
+        <TextView
+            android:id="@+id/timerTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="00:00:00"
+            android:textSize="20sp"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/distanceTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Distance: 0 meters"
+            android:textSize="16sp"
+            android:visibility="gone"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="40dp"> <!-- 중앙 정렬로 수정 -->
+        <ImageButton
+            android:id="@+id/start_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:adjustViewBounds="true"
+            android:background="@drawable/square_background"
+            android:maxWidth="80dp"
+            android:maxHeight="80dp"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/person_running_solid" />
+
+        <ImageButton
+            android:id="@+id/play_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="10dp"
+            android:adjustViewBounds="true"
+            android:maxWidth="50dp"
+            android:maxHeight="50dp"
+            android:padding="20dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/pause_solid"
+            android:visibility="gone" /> <!-- 시작 버튼은 GONE으로 초기화 -->
+        <ImageButton
+            android:id="@+id/stop_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:adjustViewBounds="true"
+            android:background="@drawable/square_background"
+            android:maxWidth="50dp"
+            android:maxHeight="50dp"
+            android:padding="20dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/stop_solid"
+            android:visibility="gone" /> <!-- 정지 버튼은 GONE으로 초기화 -->
+    </LinearLayout>
+</RelativeLayout>
