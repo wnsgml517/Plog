@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="10dp"
+        android:padding="16dp"
+        android:id="@+id/userInformation"
+        android:background="@drawable/rounded_inform">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <!-- 사용자 이름 -->
+            <TextView
+                android:id="@+id/usernameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:text="User1 님"
+                android:textSize="25sp"
+                android:textStyle="bold"/>
+
+            <!-- 정보 수정 및 설정 버튼 -->
+            <android.widget.Button
+                android:id="@+id/settingsButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:padding="10dp"
+                android:text="정보 수정 및 설정"
+                android:background="@drawable/rounded_button"/>
+        </LinearLayout>
+
+        <!-- 사용자 이미지 -->
+        <ImageView
+            android:id="@+id/userImageView"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
+            android:scaleType="centerCrop"
+            android:src="@drawable/user_solid"
+            android:padding="10dp"/>
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/userPlogInformation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_margin="10dp"
+        android:layout_below="@id/userInformation">
+
+        <!-- 나의 로깅 기록 텍스트 -->
+        <TextView
+            android:id="@+id/loggingHistoryTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="나의 로깅 기록"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- 플로깅 총 이동기록, 저장한 스탬프 개수, 총 소요시간 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <!-- 첫 번째 하위 레이아웃 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_margin="10dp"
+                android:background="@drawable/rounded_user_infrom">
+
+                <ImageView
+                    android:id="@+id/distanceIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30sp"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:elevation="8dp"
+                    android:src="@drawable/person_running_solid"
+                    android:layout_margin="10dp"/>
+
+                <TextView
+                    android:id="@+id/distanceTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textStyle="bold"
+                    android:text="0.00 meters"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_margin="10dp"
+                android:background="@drawable/rounded_user_infrom">
+                <ImageView
+                    android:id="@+id/stampIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30sp"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:elevation="8dp"
+                    android:src="@drawable/stamp_solid"
+                    android:layout_margin="10dp"/>
+                <TextView
+                    android:id="@+id/stampCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="123개"
+                    android:textStyle="bold"
+                    android:textSize="16sp" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_margin="10dp"
+                android:background="@drawable/rounded_user_infrom">
+                <ImageView
+                    android:id="@+id/timeIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30sp"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:elevation="8dp"
+                    android:src="@drawable/stopwatch_solid"
+                    android:layout_margin="10dp"/>
+                <TextView
+                    android:id="@+id/elapsedTimeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textStyle="bold"
+                    android:text="00:00:00"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_below="@id/userPlogInformation"
+        android:background="@drawable/rounded_inform">
+
+        <!-- 나의 업적 텍스트 -->
+        <TextView
+            android:id="@+id/achievementsTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="나의 업적"
+            android:textSize="18sp" />
+        <!-- 저장한 스탬프(플로깅) 개수 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- 나의 업적들 -->
+            <TextView
+                android:id="@+id/achievementsText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="나의 업적: 3"
+                android:textSize="16sp" />
+
+            <!-- 저장한 스탬프(플로깅) 개수 -->
+            <TextView
+                android:id="@+id/stampCountInAchievementsTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="스탬프 개수: 8"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <!-- 기록 스탬프들 -->
+            <LinearLayout
+                android:id="@+id/stampBookLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+                <ImageButton
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    >
+
+                </ImageButton>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</RelativeLayout>

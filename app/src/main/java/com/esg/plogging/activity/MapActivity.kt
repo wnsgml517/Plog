@@ -50,6 +50,7 @@ MapView.MapViewEventListener {
     private var isRecording = false
     private var startTime: Long = 0
     private var endTime: Long = 0
+    private var loginAccess = false
     private var distanceInMeters: Float = 0.0f
     private val timerHandler = Handler()
     private var mapViewContainer : ViewGroup? = null
@@ -140,10 +141,23 @@ MapView.MapViewEventListener {
         }
         binding.userButton.setOnClickListener()
         {
-            // 로그인 페이지로 이동
-            val intent = Intent(this, LoginActivity::class.java).apply {
+            if(!loginAccess){
+                // 로그인 페이지로 이동
+                val intent = Intent(this, LoginActivity::class.java).apply {
+                }
+                startActivity(intent)
+                // 예시 : 로그인 완료되었다 가정.
+                loginAccess = true
             }
-            startActivity(intent)
+            else
+            {
+                // 마이 페이지로 이동
+                val intent = Intent(this, LoginActivity::class.java).apply {
+                }
+                startActivity(intent)
+            }
+
+
         }
 
         //현재 위치로 이동
@@ -195,14 +209,15 @@ MapView.MapViewEventListener {
                 dialog.dismiss()
 
                 //기존 페이지로 초기화.
-                //binding.startButton.visibility = View.VISIBLE
-                //binding.playButton.visibility = View.GONE
-                //binding.stopButton.visibility = View.GONE
+                binding.startButton.visibility = View.VISIBLE
+                binding.playButton.visibility = View.GONE
+                binding.stopButton.visibility = View.GONE
 
 
-                //binding.timerTextView.visibility = View.GONE
-                //binding.distanceTextView.visibility = View.GONE
+                binding.timerTextView.visibility = View.GONE
+                binding.distanceTextView.visibility = View.GONE
 
+                startTracking()
 
                 // 기록 페이지로 이동
                 // 기록 정보를 Intent에 담아서 RecordActivity로 이동

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/drawable/rounded_button.xml -->
+
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners android:radius="20dp" /> <!-- 원하는 모서리 반지름을 지정합니다. -->
+    <solid android:color="#F2F2F2" /> <!-- 배경색을 디바이스 기본 배경색으로 지정합니다. -->
+</shape>
