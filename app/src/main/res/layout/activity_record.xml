@@ -1,148 +1,162 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- activity_record.xml -->
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    tools:context=".activity.RecordActivity">
-
-    <LinearLayout
-        android:id="@+id/recordInformation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_margin="30dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="0dp">
-
-        <TextView
-            android:id="@+id/userNameTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="플로거의 발자국"
-            android:textSize="30sp"
-            android:textStyle="bold" />
-
-        <ImageView
-            android:id="@+id/user_button"
-            android:layout_width="wrap_content"
-            android:layout_height="30sp"
-            android:layout_gravity="center"
-            android:adjustViewBounds="true"
-            android:elevation="8dp"
-            android:rotation="270"
-            android:src="@drawable/shoe_prints_solid" />
-
-    </LinearLayout>
-
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp"
+        tools:context=".activity.RecordActivity">
 
-        <!-- 첫 번째 하위 레이아웃 -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:id="@+id/recordInformation"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_alignParentTop="true"
+            android:layout_margin="30dp"
+            android:gravity="center"
             android:orientation="horizontal"
-            android:gravity="center">
+            android:padding="0dp">
+
+            <TextView
+                android:id="@+id/userNameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="플로거의 발자국"
+                android:textSize="30sp"
+                android:textStyle="bold" />
 
             <ImageView
-                android:id="@+id/distanceIcon"
+                android:id="@+id/user_button"
                 android:layout_width="wrap_content"
                 android:layout_height="30sp"
                 android:layout_gravity="center"
                 android:adjustViewBounds="true"
                 android:elevation="8dp"
-                android:src="@drawable/person_running_solid"
-                android:layout_margin="10dp"/>
-
-            <TextView
-                android:id="@+id/distanceTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="이동거리:\n0.00 meters"
-                android:textSize="16sp" />
+                android:rotation="270"
+                android:src="@drawable/shoe_prints_solid" />
 
         </LinearLayout>
+
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="20dp">
+
+            <!-- 첫 번째 하위 레이아웃 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/distanceIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30sp"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:elevation="8dp"
+                    android:src="@drawable/person_running_solid"
+                    android:layout_margin="10dp"/>
+
+                <TextView
+                    android:id="@+id/distanceTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="이동거리:\n0.00 meters"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="center">
+                <ImageView
+                    android:id="@+id/timeIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30sp"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:elevation="8dp"
+                    android:src="@drawable/stopwatch_solid"
+                    android:layout_margin="10dp"/>
+                <TextView
+                    android:id="@+id/elapsedTimeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="총 소요시간\n00:00:00"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/recordCourse"
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            android:layout_alignParentTop="true"
             android:layout_weight="1"
             android:orientation="horizontal"
-            android:gravity="center">
-            <ImageView
-                android:id="@+id/timeIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="30sp"
-                android:layout_gravity="center"
-                android:adjustViewBounds="true"
-                android:elevation="8dp"
-                android:src="@drawable/stopwatch_solid"
-                android:layout_margin="10dp"/>
-            <TextView
-                android:id="@+id/elapsedTimeTextView"
-                android:layout_width="wrap_content"
+            android:padding="0dp">
+
+            <RelativeLayout
+                android:id="@+id/map_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"></RelativeLayout>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/inputRecord"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:orientation="vertical"
+            android:padding="0dp">
+            <!-- 이동 경로를 보여줄 View 추가 -->
+            <EditText
+                android:id="@+id/feedbackEditText"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="총 소요시간\n00:00:00"
-                android:textSize="16sp" />
+                android:layout_marginTop="16dp"
+                android:hint="플로깅 감상평을 입력하세요."
+                android:inputType="textMultiLine"
+                android:lines="4" />
+            <ImageView
+                android:id="@+id/photoImageView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/user_solid" />
+
+            <!-- 저장 버튼 -->
+            <Button
+                android:id="@+id/saveButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="플로깅 기록 저장" />
         </LinearLayout>
 
 
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/recordCourse"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_alignParentTop="true"
-        android:orientation="horizontal"
-        android:padding="0dp">
 
-        <RelativeLayout
-            android:id="@+id/map_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        </RelativeLayout>
-
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:id="@+id/inputRecord"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:orientation="horizontal"
-        android:padding="0dp">
-        <!-- 이동 경로를 보여줄 View 추가 -->
-        <EditText
-            android:id="@+id/feedbackEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="플로깅 감상평을 입력하세요."
-            android:inputType="textMultiLine"
-            android:lines="4" />
-
-        <Button
-            android:id="@+id/saveButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Save Record" />
-    </LinearLayout>
-
-
-
-</LinearLayout>
+</ScrollView>

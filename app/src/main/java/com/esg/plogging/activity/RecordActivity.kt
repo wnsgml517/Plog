@@ -4,9 +4,13 @@ package com.esg.plogging.activity
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import com.esg.plogging.databinding.ActivityMapBinding
@@ -22,7 +26,7 @@ class RecordActivity : AppCompatActivity(),MapView.POIItemEventListener,
 
     private lateinit var mapView : MapView
     private var mapViewContainer : ViewGroup? = null
-
+    var bitmap : Bitmap? = null // 이미지 비트맵 값.
     var centerPoint : MapPoint? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +50,13 @@ class RecordActivity : AppCompatActivity(),MapView.POIItemEventListener,
         // TODO: 이동 경로를 보여주는 View에 대한 설정
         startTracking()
 
+        // 갤러리에서 이미지 선택
+        binding.photoImageView.setOnClickListener {
+            // 갤러리에서 이미지 선택을 위한 Intent
+            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            startActivityForResult(intent, PICK_IMAGE_REQUEST)
+        }
+
         // 감상평 입력 및 저장 버튼 이벤트 처리
         binding.saveButton.setOnClickListener {
             val feedback = binding.feedbackEditText.text.toString()
@@ -53,6 +64,7 @@ class RecordActivity : AppCompatActivity(),MapView.POIItemEventListener,
             mapViewContainer?.removeAllViews();
             finish() // 기록 페이지를 닫음
         }
+
         mapViewContainer = binding.mapView as ViewGroup
         mapViewContainer!!.addView(mapView)
 
@@ -91,10 +103,26 @@ class RecordActivity : AppCompatActivity(),MapView.POIItemEventListener,
         val hours = minutes / 60
         return String.format("%02d:%02d:%02d", hours, minutes % 60, seconds % 60)
     }
+    // onActivityResult 메서드에서 이미지 선택 후 처리를 합니다.
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
+            // 선택한 이미지의 URI를 가져와서 ImageView에 설정
+            val selectedImageUri = data.data
+            val inputStream = contentResolver.openInputStream(selectedImageUri!!)
+            bitmap = BitmapFactory.decodeStream(inputStream)
+            System.out.println("비트맵 값 DB 저장 : "+ bitmap.toString())
+            binding.photoImageView.setImageBitmap(bitmap)
+        }
+    }
+
     override fun onPOIItemSelected(p0: MapView?, p1: MapPOIItem?) {
         TODO("Not yet implemented")
     }
 
+    companion object {
+        private const val PICK_IMAGE_REQUEST = 1
+    }
 
     override fun onCalloutBalloonOfPOIItemTouched(p0: MapView?, p1: MapPOIItem?) {
         TODO("Not yet implemented")

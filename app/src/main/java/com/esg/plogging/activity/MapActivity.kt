@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
@@ -21,7 +22,6 @@ import com.esg.plogging.R
 import java.security.MessageDigest
 import java.security.MessageDigest.*
 import java.security.NoSuchAlgorithmException
-import net.daum.mf.map.api.MapView
 import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 import androidx.core.app.ActivityCompat
@@ -30,9 +30,8 @@ import androidx.core.content.ContextCompat
 
 import com.esg.plogging.databinding.ActivityMapBinding
 import com.google.android.gms.maps.MapFragment
-import net.daum.mf.map.api.CalloutBalloonAdapter
-import net.daum.mf.map.api.MapPOIItem
-import net.daum.mf.map.api.MapPoint
+import net.daum.mf.map.api.*
+import net.daum.mf.map.n.api.internal.NativePolylineOverlayManager.removeAllPolylines
 
 class MapActivity : AppCompatActivity(),MapView.POIItemEventListener,
 MapView.MapViewEventListener {
@@ -63,8 +62,13 @@ MapView.MapViewEventListener {
         }
     }
 
-    // 일시정지 여부 확인 변수
-    private var isPaused = false
+    // 위치 경로 변수
+    // 경로 정보 저장을 위한 리스트
+    private val path: MutableList<MapPoint> = mutableListOf()
+
+    // 경로를 그리기 위한 폴리라인 객체
+    private val mapPolyline: MapPolyline = MapPolyline()
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -199,6 +203,7 @@ MapView.MapViewEventListener {
                     putExtra("elapsedTime", pausedTime)
                     putExtra("distance", distanceInMeters)
                     // TODO: 이동 경로 등의 정보를 Intent에 추가
+                    //putExtra("path",path)
                 }
                 mapViewContainer?.removeAllViews();
                 startActivity(intent)
@@ -265,12 +270,37 @@ MapView.MapViewEventListener {
     fun onLocationChanged(location: Location?) {
         if (location != null) {
             updateDistance(location)
+
+            // 위치가 변경될 때마다 경로 정보를 리스트에 추가
+            val userPosition = MapPoint.mapPointWithGeoCoord(location.latitude, location.longitude)
+            path.add(userPosition)
+
+            // 폴리라인 업데이트
+            updatePathPolyline()
+
+            // 기타 필요한 작업 수행...
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         stopTracking()
+    }
+
+    // 경로를 폴리라인으로 그리는 메서드
+    private fun updatePathPolyline() {
+        removeAllPolylines() // 기존의 폴리라인 삭제
+        // 경로의 각 지점을 폴리라인에 추가
+        for (point in path) {
+            mapPolyline.addPoint(point)
+        }
+
+        // 폴리라인 스타일 설정
+        mapPolyline.lineColor = Color.argb(128, 255, 0, 0) // 적절한 색상 및 투명도 지정
+       // mapPolyline.= 5 // 폴리라인 두께 설정
+
+        // 지도에 폴리라인 추가
+        mapView.addPolyline(mapPolyline)
     }
 
     private fun createCustomMarker(mapView: MapView){
