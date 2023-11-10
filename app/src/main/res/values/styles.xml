@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/values/styles.xml -->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="CustomTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="hintTextAppearance">@style/CustomTextAppearance</item>
+        <item name="boxStrokeColor">@color/plog_color</item> <!-- 원하는 색상으로 변경하세요 -->
+        <item name="android:colorFocusedHighlight">@color/plog_color</item>
+        <item name="android:colorControlNormal">@color/plog_color</item>
+        <item name="android:textCursorDrawable">@color/plog_color</item>
+        <item name="android:textColorHint">@color/plog_color</item>
+        <item name="hintTextColor">@color/plog_color</item>
+
+
+    </style>
+
+    <style name="CustomTextAppearance" parent="TextAppearance.Design.Hint">
+        <item name="android:textSize">14sp</item> <!-- 원하는 크기로 조절하세요 -->
+    </style>
+
+</resources>

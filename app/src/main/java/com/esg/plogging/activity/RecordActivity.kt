@@ -61,6 +61,10 @@ class RecordActivity : AppCompatActivity(),MapView.POIItemEventListener,
         binding.saveButton.setOnClickListener {
             val feedback = binding.feedbackEditText.text.toString()
             // TODO: 감상평을 저장하거나 처리하는 로직 추가
+
+            System.out.println("감상평 : "+feedback)
+            System.out.println("이미지 저장 값 : "+bitmap.toString())
+
             mapViewContainer?.removeAllViews();
             finish() // 기록 페이지를 닫음
         }

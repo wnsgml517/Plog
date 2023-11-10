@@ -77,6 +77,7 @@ MapView.MapViewEventListener {
         binding = ActivityMapBinding.inflate(layoutInflater)
 
         binding.startButton.setOnClickListener {
+
             // Start button clicked, perform your action here
             binding.startButton.visibility = View.GONE
             binding.playButton.visibility = View.VISIBLE
@@ -137,6 +138,13 @@ MapView.MapViewEventListener {
             //timerHandler.removeCallbacks(timerRunnable)
             showStopDialog()
         }
+        binding.userButton.setOnClickListener()
+        {
+            // 로그인 페이지로 이동
+            val intent = Intent(this, LoginActivity::class.java).apply {
+            }
+            startActivity(intent)
+        }
 
         //현재 위치로 이동
         startTracking()
@@ -178,7 +186,7 @@ MapView.MapViewEventListener {
             .setPositiveButton("완료") { dialog, _ ->
 
                 isRecording = false
-                pausedTime = 0 // 0으로 초기화
+
                 timerHandler.removeCallbacks(timerRunnable)
 
                 //stop 시.
@@ -205,6 +213,7 @@ MapView.MapViewEventListener {
                     // TODO: 이동 경로 등의 정보를 Intent에 추가
                     //putExtra("path",path)
                 }
+                pausedTime = 0 // 0으로 초기화
                 mapViewContainer?.removeAllViews();
                 startActivity(intent)
 

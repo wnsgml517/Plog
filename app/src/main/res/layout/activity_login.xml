@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/layout/activity_login.xml -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.LoginActivity">
+
+    <!-- 로고 이미지 -->
+    <ImageView
+        android:id="@+id/logoImageView"
+        android:layout_width="197dp"
+        android:layout_height="300dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:contentDescription="Logo Image"
+        android:src="@drawable/plog_logo2" />
+
+    <!-- ID 입력란 -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/idInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/logoImageView"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        style="@style/CustomTextInputLayout"
+        android:backgroundTint="#8BBF73">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/idEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="ID"
+            android:inputType="text" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- PW 입력란 -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/pwInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/idInputLayout"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        style="@style/CustomTextInputLayout"
+        android:backgroundTint="#8BBF73">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/pwEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password"
+            android:inputType="textPassword" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- 플로깅 하러가기 버튼 -->
+    <android.widget.Button
+        android:id="@+id/goPloggingButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/pwInputLayout"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:background="@drawable/rounded_button"
+        android:text="플로깅 하러가기"
+        android:textColor="#FFFFFF"
+        />
+
+    <!-- 회원가입 텍스트 -->
+    <TextView
+        android:id="@+id/signupTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/goPloggingButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:text="회원이 아니신가요? 회원가입" />
+
+    <!-- 간편 로그인 버튼 -->
+    <Button
+        android:id="@+id/socialLoginButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/signupTextView"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:background="@drawable/rounded_button"
+        android:text="간편 로그인" />
+
+</RelativeLayout>
