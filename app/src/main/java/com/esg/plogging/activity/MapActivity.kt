@@ -53,6 +53,7 @@ MapView.MapViewEventListener {
     private var endTime: Long = 0
     private var distanceInMeters: Float = 0.0f
     private val timerHandler = Handler()
+    private var mapViewContainer : ViewGroup? = null
     private val timerRunnable = object : Runnable {
         override fun run() {
             val currentTime = System.currentTimeMillis()
@@ -136,8 +137,9 @@ MapView.MapViewEventListener {
         //현재 위치로 이동
         startTracking()
 
-        val mapViewContainer = binding.mapView as ViewGroup
-        mapViewContainer.addView(mapView)
+        mapViewContainer = binding.mapView as ViewGroup
+        mapViewContainer!!.addView(mapView)
+
         setContentView(binding.root)
 
 
@@ -198,7 +200,7 @@ MapView.MapViewEventListener {
                     putExtra("distance", distanceInMeters)
                     // TODO: 이동 경로 등의 정보를 Intent에 추가
                 }
-
+                mapViewContainer?.removeAllViews();
                 startActivity(intent)
 
             }
