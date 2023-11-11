@@ -77,13 +77,17 @@ MapView.MapViewEventListener {
         mapView = MapView(this)
         binding = ActivityMapBinding.inflate(layoutInflater)
 
-        binding.startButton.setOnClickListener {
+        binding.startTextview.setOnClickListener {
 
             // Start button clicked, perform your action here
             binding.startButton.visibility = View.GONE
+            binding.startLayout.visibility = View.GONE
+            binding.startTextview.visibility = View.GONE
+
             binding.playButton.visibility = View.VISIBLE
             binding.stopButton.visibility = View.VISIBLE
 
+            binding.nowView.visibility = View.VISIBLE
             binding.timerTextView.visibility = View.VISIBLE
             binding.distanceTextView.visibility = View.VISIBLE
             // 타이머 시작
@@ -139,6 +143,14 @@ MapView.MapViewEventListener {
             //timerHandler.removeCallbacks(timerRunnable)
             showStopDialog()
         }
+        binding.trashButton.setOnClickListener()
+        {
+            binding.trashButton.setBackgroundResource(R.drawable.circular_click_background)
+        }
+        binding.toiletButton.setOnClickListener()
+        {
+            binding.toiletButton.setBackgroundResource(R.drawable.circular_click_background)
+        }
         binding.userButton.setOnClickListener()
         {
             if(!loginAccess){
@@ -152,7 +164,7 @@ MapView.MapViewEventListener {
             else
             {
                 // 마이 페이지로 이동
-                val intent = Intent(this, LoginActivity::class.java).apply {
+                val intent = Intent(this, MyPageActivity::class.java).apply {
                 }
                 startActivity(intent)
             }
@@ -210,10 +222,13 @@ MapView.MapViewEventListener {
 
                 //기존 페이지로 초기화.
                 binding.startButton.visibility = View.VISIBLE
+                binding.startLayout.visibility = View.VISIBLE
+                binding.startTextview.visibility = View.VISIBLE
+
                 binding.playButton.visibility = View.GONE
                 binding.stopButton.visibility = View.GONE
 
-
+                binding.nowView.visibility = View.GONE
                 binding.timerTextView.visibility = View.GONE
                 binding.distanceTextView.visibility = View.GONE
 

@@ -23,6 +23,7 @@ class LoginActivity : AppCompatActivity() {
             // ID 입력창 클릭 시 처리
             // 여기에 작성하세요.
             // 예를 들면, ID 입력창 포커스 주기 등의 작업을 수행할 수 있습니다.
+
         }
 
         binding.pwInputLayout.setEndIconOnClickListener {
@@ -33,6 +34,7 @@ class LoginActivity : AppCompatActivity() {
         // 플로깅 하러가기 버튼을 누를 때 로그인 로직 수행
         binding.goPloggingButton.setOnClickListener {
             // TODO: 로그인 로직 구현
+            finish()
         }
         setContentView(binding.root)
     }

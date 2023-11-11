@@ -19,14 +19,15 @@
 
         <!-- 첫 번째 이미지 버튼 (왼쪽에 위치) -->
         <ImageView
+            android:id="@+id/previousButton"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="start"
             android:layout_margin="70dp"
             android:padding="10dp"
+            android:rotation="180"
             android:scaleType="centerCrop"
-            android:src="@drawable/arrow"
-            android:rotation="180"/>
+            android:src="@drawable/arrow" />
 
         <!-- 텍스트뷰 -->
         <TextView
@@ -40,6 +41,7 @@
 
         <!-- 두 번째 이미지 버튼 (오른쪽에 위치) -->
         <ImageView
+            android:id="@+id/nextButton"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="end"
@@ -158,6 +160,7 @@
                     android:layout_margin="10dp"
                     android:adjustViewBounds="true"
                     android:elevation="8dp"
+                    android:padding="-2dp"
                     android:src="@drawable/person_running_solid" />
 
                 <TextView
