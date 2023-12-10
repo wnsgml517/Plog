@@ -104,7 +104,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="0.5 km"
+            android:text="0.0km"
             android:textSize="40sp"
             android:textStyle="bold"
             android:visibility="gone" />

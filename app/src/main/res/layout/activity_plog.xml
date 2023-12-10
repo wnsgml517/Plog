@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".activity.PlogActivity">
+
+        <LinearLayout
+            android:id="@id/tapBar"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="15dp">
+
+            <!-- 첫 번째 이미지 버튼 (왼쪽에 위치) -->
+            <ImageView
+                android:id="@+id/previousButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="start"
+                android:layout_margin="70dp"
+                android:padding="10dp"
+                android:rotation="180"
+                android:scaleType="centerCrop"
+                android:src="@drawable/arrow" />
+
+            <!-- 텍스트뷰 -->
+            <TextView
+                android:id="@+id/plogIndex"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:text="n번째 업적"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                tools:fontFamily="sans-serif-medium" />
+
+            <ImageView
+                android:id="@+id/deleteButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="end"
+                android:layout_margin="70dp"
+                android:padding="8dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/delete" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/userInformation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tapBar"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/rounded_user_infrom"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="15dp">
+
+
+            <RelativeLayout
+                android:layout_width="203dp"
+                android:layout_height="165dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingRight="10dp">
+
+                <!-- ImageView for background -->
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:alpha="0.4"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/stamp_01" />
+
+                <!-- 사용자 시간 -->
+                <TextView
+                    android:id="@+id/plogDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="25dp"
+                    android:text="23.08.30"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+
+                <!-- 사용자 거리 -->
+                <TextView
+                    android:id="@+id/plogDistance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/plogDate"
+                    android:layout_centerInParent="true"
+                    android:text="5.31 km"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+
+                <!-- 사용자 이름 -->
+                <TextView
+                    android:id="@+id/plogName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/plogDistance"
+                    android:layout_centerInParent="true"
+                    android:layout_marginBottom="8dp"
+                    android:text="공주대학교"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+
+
+            <!-- 사용자 이미지 -->
+            <ImageView
+                android:id="@+id/userImageView"
+                android:layout_width="156dp"
+                android:layout_height="167dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginRight="30dp"
+                android:padding="5dp"
+                android:src="@drawable/user_solid" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/userPlogInformation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/userInformation"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="20dp"
+            android:orientation="vertical"
+            android:padding="0dp">
+
+            <!-- 나의 로깅 기록 텍스트 -->
+            <TextView
+                android:id="@+id/loggingHistoryTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="0dp"
+                android:fontFamily="@font/noto_bold"
+                android:paddingStart="8dp"
+                android:text="나의 한줄평"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/plogOneReview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/noto_bold"
+                android:padding="0dp"
+                android:paddingStart="8dp"
+                android:text="길이 너무 별로..."
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <!-- 플로깅 총 이동기록, 저장한 스탬프 개수, 총 소요시간 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="0dp"
+                android:orientation="horizontal">
+
+                <!-- 첫 번째 하위 레이아웃 -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rounded_user_infrom"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="3dp">
+
+                    <TextView
+                        android:id="@+id/distanceTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="0.00 km"
+                        android:textSize="23sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:id="@+id/distanceView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:paddingLeft="0dp"
+                        android:paddingRight="0dp"
+                        android:visibility="visible">
+
+                        <ImageButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentBottom="true"
+                            android:adjustViewBounds="true"
+                            android:backgroundTint="@android:color/transparent"
+                            android:maxWidth="50dp"
+                            android:maxHeight="50dp"
+                            android:padding="8dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/person_running_solid" />
+
+                        <TextView
+                            android:id="@+id/distance"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:fontFamily="@font/noto_extrabold"
+                            android:gravity="center"
+                            android:text="이동 거리"
+                            android:textAlignment="center"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:visibility="visible" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rounded_user_infrom"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="3dp">
+
+                    <TextView
+                        android:id="@+id/elapsedTimeTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="00:00:00"
+                        android:textSize="23sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:id="@+id/start_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:paddingLeft="0dp"
+                        android:paddingRight="0dp"
+                        android:visibility="visible">
+
+                        <ImageButton
+                            android:id="@+id/start_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentBottom="true"
+                            android:adjustViewBounds="true"
+                            android:backgroundTint="@android:color/transparent"
+                            android:maxWidth="50dp"
+                            android:maxHeight="50dp"
+                            android:padding="8dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/stopwatch_solid" />
+
+                        <TextView
+                            android:id="@+id/start_textview"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:fontFamily="@font/noto_extrabold"
+                            android:gravity="center"
+                            android:text="소요 시간"
+                            android:textAlignment="center"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:visibility="visible" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/userPlogInformation"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/rounded_user_infrom"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- 나의 업적 텍스트 -->
+            <TextView
+                android:id="@+id/achievementsTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/noto_bold"
+                android:text="플로깅 경로"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+
+            <LinearLayout
+                android:id="@+id/recordCourse"
+                android:layout_width="match_parent"
+                android:layout_height="350dp"
+                android:layout_alignParentTop="true"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:padding="0dp">
+
+                <RelativeLayout
+                    android:id="@+id/map_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"></RelativeLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </RelativeLayout>
+
+</ScrollView>

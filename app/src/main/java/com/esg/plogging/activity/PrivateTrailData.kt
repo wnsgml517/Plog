@@ -1,4 +1,9 @@
 package com.esg.plogging.activity
 
-class PrivateTrailData {
-}
+data class PrivateTrailData(
+    val locationName: String,
+    val RegionID: Int,
+    val latitude: Double,
+    val longitude: Double,
+    val UserID: String,
+)

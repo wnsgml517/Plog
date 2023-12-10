@@ -1,18 +1,16 @@
 package com.esg.plogging.activity
 
-import org.json.JSONObject
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
 
 // JoinApiManager.kt
-class DeleteApiManager {
+class JoinApiManager {
     companion object {
-        fun delete(table: String, key: String, value: Int ,userID : String, callback: (Boolean) -> Unit) {
+        fun join(nickname: String, userID: String, passwd: String, callback: (Boolean) -> Unit) {
             Thread {
                 try {
-                    System.out.println("삭제...........")
-                    val serverAddress = "http://13.209.47.199/deleteData.php"
+                    val serverAddress = "http://13.209.47.199/signup.php"
                     val url = URL(serverAddress)
 
                     val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
@@ -21,16 +19,13 @@ class DeleteApiManager {
                     connection.doOutput = true
                     connection.useCaches = false
 
-                    val data = "table=$table&key=${key}&value=$value&UserID=$userID"
+                    val data = "NickName=$nickname&UserID=$userID&Passwd=$passwd"
 
                     val os: OutputStream = connection.outputStream
                     val writer = OutputStreamWriter(os)
                     writer.write(data, 0, data.length)
                     writer.flush()
                     writer.close()
-
-
-                    System.out.println("삭제...........")
 
                     val `is`: InputStream = connection.inputStream
                     val isr = InputStreamReader(`is`)
@@ -40,14 +35,10 @@ class DeleteApiManager {
                         val line: String = reader.readLine() ?: break
                         buffer.append("$line\n")
                     }
-                    System.out.println(buffer.toString())
-                    System.out.println("삭제~~")
 
-                    val jsonStr = buffer.toString()
-                    val jsonObject = JSONObject(jsonStr)
-
+                    System.out.println(buffer.toString()+"회원가입~~")
                     // 서버 응답 확인
-                    val success = jsonObject.getString("message").contains("delete Successfully")
+                    val success = buffer.toString().contains("Success")
                     callback(success)
 
                 } catch (e: Exception) {

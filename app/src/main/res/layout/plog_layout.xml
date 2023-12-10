@@ -1,66 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/ball_view"
+    android:id="@+id/card_view"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_margin="4px"
-    app:cardCornerRadius="8px">
+    android:layout_height="wrap_content">
 
     <LinearLayout
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
+        android:id="@+id/markerlayout"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_margin="10dp"
-        android:background="@drawable/rounded_user_now_inform"
+        android:background="@drawable/rounded_user_plog_inform"
         android:elevation="5dp"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:padding="8dp">
-
-        <TextView
-            android:id="@+id/ball_tv_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
-            android:layout_marginTop="0dp"
-            android:fontFamily="@font/noto_extrabold"
-            android:text="위치 이름"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:textColor="#B9BF04" />
+        android:gravity="center">
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:id="@+id/imagelayout"
+            android:layout_width="47dp"
+            android:layout_height="47dp"
+            android:background="@drawable/rounded_user_plog_inform"
+            android:elevation="5dp"
+            android:gravity="center_horizontal">
 
-            <TextView
-                android:id="@+id/ball_tv_address"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:fontFamily="@font/noto_extra"
-                android:text="N회 방문"
-                android:textSize="13sp"
-                app:layout_constraintStart_toStartOf="@+id/ball_tv_name"
-                app:layout_constraintTop_toBottomOf="@+id/ball_tv_name" />
+            <android.widget.ImageView
+                android:id="@+id/plogImageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/rounded_user_plog_inform"
+                android:contentDescription="Logo Image"
+                android:scaleType="centerCrop"
+                android:src="@drawable/trash_upload" />
 
-            <TextView
-                android:id="@+id/ball_tv_distance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:fontFamily="@font/noto_extra"
-                android:text="총 N km"
-                android:textSize="13sp"
-                app:layout_constraintStart_toStartOf="@+id/ball_tv_address"
-                app:layout_constraintTop_toBottomOf="@+id/ball_tv_address" />
         </LinearLayout>
-
-
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+</LinearLayout>

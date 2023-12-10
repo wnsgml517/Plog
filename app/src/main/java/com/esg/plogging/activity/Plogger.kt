@@ -1,7 +1,7 @@
 package com.esg.plogging.activity
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
 
-class LoginViewModel : ViewModel() {
+class Plogger : Application() {
     var loginData: LoginData? = null
 }

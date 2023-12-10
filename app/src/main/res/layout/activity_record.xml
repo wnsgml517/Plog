@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_margin="30dp"
+            android:layout_margin="10dp"
             android:gravity="center"
             android:orientation="horizontal"
             android:padding="0dp">
@@ -27,6 +27,7 @@
                 android:id="@+id/userNameTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/noto_extrabold"
                 android:text="플로거의 발자국"
                 android:textSize="30sp"
                 android:textStyle="bold" />
@@ -36,6 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="30sp"
                 android:layout_gravity="center"
+                android:layout_marginStart="3dp"
                 android:adjustViewBounds="true"
                 android:elevation="8dp"
                 android:rotation="270"
@@ -46,60 +48,64 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_margin="20dp">
+            android:layout_margin="15dp"
+            android:orientation="horizontal">
 
             <!-- 첫 번째 하위 레이아웃 -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal"
-                android:gravity="center">
+                android:gravity="center"
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/distanceIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="30sp"
                     android:layout_gravity="center"
+                    android:layout_margin="10dp"
                     android:adjustViewBounds="true"
                     android:elevation="8dp"
-                    android:src="@drawable/person_running_solid"
-                    android:layout_margin="10dp"/>
+                    android:src="@drawable/person_running_solid" />
 
                 <TextView
                     android:id="@+id/distanceTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/noto_bold"
                     android:text="이동거리:\n0.00 meters"
                     android:textSize="16sp" />
 
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal"
-                android:gravity="center">
+                android:gravity="center"
+                android:orientation="horizontal">
+
                 <ImageView
                     android:id="@+id/timeIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="30sp"
                     android:layout_gravity="center"
+                    android:layout_margin="10dp"
                     android:adjustViewBounds="true"
                     android:elevation="8dp"
-                    android:src="@drawable/stopwatch_solid"
-                    android:layout_margin="10dp"/>
+                    android:src="@drawable/stopwatch_solid" />
+
                 <TextView
                     android:id="@+id/elapsedTimeTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/noto_bold"
                     android:text="총 소요시간\n00:00:00"
                     android:textSize="16sp" />
             </LinearLayout>
-
 
 
         </LinearLayout>
@@ -126,32 +132,100 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
+            android:layout_marginTop="15dp"
             android:orientation="vertical"
             android:padding="0dp">
-            <!-- 이동 경로를 보여줄 View 추가 -->
-            <EditText
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
+
+
+                <AutoCompleteTextView
+                    android:id="@+id/editTextLocation"
+                    android:layout_width="260dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/border"
+                    android:hint="플로깅 장소 입력"
+                    android:inputType="text"
+                    android:paddingStart="11dp"
+                    tools:fontFamily="@font/noto_medium" />
+
+
+                <Spinner
+                    android:id="@+id/spinnerLocations"
+                    android:layout_width="106dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="10dp"
+                    android:autofillHints="기존장소 선택"
+                    android:background="@drawable/spinner_background" />
+            </LinearLayout>
+
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/feedbackEditText"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="플로깅 감상평을 입력하세요."
+                android:layout_height="55dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="40dp"
+                android:background="@drawable/border"
+                android:fontFamily="@font/noto_medium"
+                android:hint="플로깅 감상평을 적어주세요!"
                 android:inputType="textMultiLine"
-                android:lines="4" />
+                android:paddingStart="11dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:fontFamily="@font/noto_extrabold"
+                android:text="플로깅 완료 사진을 업로드해주세요!"
+                android:textSize="20sp" />
+
             <ImageView
                 android:id="@+id/photoImageView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:layout_marginBottom="50dp"
                 android:adjustViewBounds="true"
-                android:src="@drawable/user_solid" />
+                android:src="@drawable/trash_upload" />
 
-            <!-- 저장 버튼 -->
-            <Button
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:fontFamily="@font/noto_extrabold"
+                android:text="저장할 스탬프 사진을 클릭해주세요!\n"
+                android:textSize="20sp" />
+
+            <!-- 스탬프 선택 버튼 -->
+            <GridView
+                android:id="@+id/gridview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="40dp"
+                android:columnWidth="90dp"
+                android:gravity="center"
+                android:horizontalSpacing="10dp"
+                android:numColumns="4"
+                android:stretchMode="columnWidth"
+                android:verticalSpacing="10dp">
+
+            </GridView>
+
+            <android.widget.Button
                 android:id="@+id/saveButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="플로깅 기록 저장" />
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="30dp"
+                android:background="@drawable/rounded_button"
+                android:text="플로깅 기록 저장"
+                android:textColor="#FFFFFF" />
+
         </LinearLayout>
 
 
