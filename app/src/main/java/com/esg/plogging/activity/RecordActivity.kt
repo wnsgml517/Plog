@@ -3,15 +3,11 @@ package com.esg.plogging.activity
 // RecordActivity.kt
 
 import android.R
-import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.location.Location
-import android.location.LocationManager
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Base64

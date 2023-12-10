@@ -91,13 +91,12 @@
             <!-- 정보 수정 및 설정 버튼 -->
             <android.widget.Button
                 android:id="@+id/settingsButton"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="23dp"
+                android:layout_height="23dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/edit"
-                android:padding="10dp" />
+                android:layout_marginStart="7dp"
+                android:background="@drawable/pen_solid"
+                android:backgroundTint="#4E4E4E" />
         </LinearLayout>
 
         <!-- 사용자 이미지 -->
@@ -143,7 +142,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="0dp"
                     android:text="0.0 km"
-                    android:textSize="20sp"
+                    android:textSize="23sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -173,7 +172,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0개"
-                    android:textSize="20sp"
+                    android:textSize="23sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -203,7 +202,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="0dp"
                     android:text="00:00:00"
-                    android:textSize="20sp"
+                    android:textSize="23sp"
                     android:textStyle="bold" />
 
                 <TextView

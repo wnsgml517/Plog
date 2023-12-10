@@ -19,16 +19,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.esg.plogging.R
 import com.esg.plogging.databinding.ActivityMapBinding
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import net.daum.mf.map.api.*
 import net.daum.mf.map.n.api.internal.NativePOIItemMarkerManager.removeAllPOIItemMarkers
 import net.daum.mf.map.n.api.internal.NativePolylineOverlayManager.removeAllPolylines
@@ -686,9 +682,12 @@ class MapActivity : AppCompatActivity() {
                 bottomSheetDialog.setContentView(bottomSheetView)
 
                 bottomSheetDialog.show()*/
-                val bottomSheetFragment = CustomBottomSheetFragment()
-                bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
+                val pathString = path.joinToString(";") { mapPoint ->
+                    "${mapPoint.mapPointGeoCoord.latitude},${mapPoint.mapPointGeoCoord.longitude}"
+                }
 
+                val bottomSheetFragment = CustomBottomSheetFragment.newInstance(pausedTime, distanceInMeters, pathString, Location("now").longitude,Location("now").latitude)
+                bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
 
                 // 기록 페이지로 이동
                 // 기록 정보를 Intent에 담아서 RecordActivity로 이동
