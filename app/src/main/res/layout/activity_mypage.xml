@@ -51,10 +51,10 @@
     <LinearLayout
         android:id="@+id/userInformation"
         android:layout_width="match_parent"
-        android:layout_height="190dp"
+        android:layout_height="200dp"
         android:layout_below="@id/tapBar"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="28dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:orientation="vertical">
@@ -62,11 +62,11 @@
 
         <ImageView
             android:id="@+id/userImageView"
-            android:layout_width="110dp"
-            android:layout_height="110dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/profile"
-            android:padding="25dp"
+            android:padding="35dp"
             android:scaleType="centerCrop"
             android:src="@drawable/user_solid" />
 
@@ -172,6 +172,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0개"
+                    android:textColor="#244C25"
                     android:textSize="23sp"
                     android:textStyle="bold" />
 

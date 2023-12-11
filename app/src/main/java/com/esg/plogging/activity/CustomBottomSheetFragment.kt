@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.esg.plogging.R
+import com.esg.plogging.databinding.ActivityMapBinding
 import com.esg.plogging.databinding.ActivitySaveBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.io.ByteArrayOutputStream
@@ -21,6 +22,7 @@ import java.time.format.DateTimeFormatter
 class CustomBottomSheetFragment : BottomSheetDialogFragment() {
 
     private lateinit var binding: ActivitySaveBinding
+    private lateinit var mbinding: ActivityMapBinding
     var encodedImage : String? = null
     var bitmap : Bitmap? = null // 이미지 비트맵 값.
 
@@ -29,6 +31,7 @@ class CustomBottomSheetFragment : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = ActivitySaveBinding.inflate(inflater, container, false)
+        mbinding = ActivityMapBinding.inflate(inflater, container, false)
 
         // 플로깅 정보 들고오기
         val elapsedTime = arguments?.getInt("elapsedTime")
@@ -42,7 +45,7 @@ class CustomBottomSheetFragment : BottomSheetDialogFragment() {
         val loginData = myApp.loginData
 
         // 실행 시간, 거리 정보 설정, 오늘 날짜 설정
-        binding.elapsedTimeTextView2.text = "${elapsedTime?.let { formatElapsedTime(it) }}"
+        binding.elapsedTimeTextView.text = "${elapsedTime?.let { formatElapsedTime(it) }}"
         binding.distanceTextView2.text = "${String.format("%.1f", distance)}km"
         binding.dayView.text = getCurrentDay()
 
@@ -109,6 +112,9 @@ class CustomBottomSheetFragment : BottomSheetDialogFragment() {
             val locationName = binding.editTextLocation.text.toString()
 
 
+
+
+
             // TODO: 감상평을 저장하거나 처리하는 로직 추가
             if (path != null && distance != null && loginData?.logUserID != null && encodedImage != null
                 && longitude != null && latitude != null && elapsedTime != null) {
@@ -126,6 +132,17 @@ class CustomBottomSheetFragment : BottomSheetDialogFragment() {
                         // 가입 성공 처리
                         activity?.runOnUiThread {
                             System.out.println("기록 성공")
+                            //기존 페이지로 초기화.
+                            mbinding.startButton.visibility = View.VISIBLE
+                            mbinding.startLayout.visibility = View.VISIBLE
+                            mbinding.startTextview.visibility = View.VISIBLE
+
+                            mbinding.playButton.visibility = View.GONE
+                            mbinding.stopButton.visibility = View.GONE
+
+                            mbinding.nowView.visibility = View.GONE
+                            mbinding.timerTextView.visibility = View.GONE
+                            mbinding.distanceTextView.visibility = View.GONE
                         }
                     } else {
                         // 가입 실패 처리

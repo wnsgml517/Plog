@@ -80,6 +80,7 @@
                 android:padding="13dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/toilet_solid" />
+
         </LinearLayout>
     </LinearLayout>
 
@@ -121,18 +122,63 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/update_layout"
+        android:layout_width="170dp"
+        android:layout_height="50dp"
+        android:layout_below="@id/tapBar"
+
+        android:layout_centerInParent="true"
+        android:background="@drawable/rounded_user_plog_inform"
+        android:elevation="5dp"
+        android:gravity="center"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:visibility="gone">
+
+        <ImageButton
+            android:id="@+id/update_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:adjustViewBounds="true"
+            android:backgroundTint="@android:color/transparent"
+            android:maxWidth="50dp"
+            android:maxHeight="50dp"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/rotate_solid" />
+
+        <TextView
+            android:id="@+id/update_textview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:fontFamily="@font/noto_bold"
+            android:gravity="center"
+            android:text="현 지도에서 검색"
+            android:textAlignment="center"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:visibility="visible" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/control_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
         android:layout_alignParentBottom="true"
         android:gravity="center"
         android:orientation="horizontal"
-        android:padding="70dp"> <!-- 중앙 정렬로 수정 -->
+        android:paddingTop="70dp"
+        android:paddingBottom="70dp"
+        android:visibility="visible"> <!-- 중앙 정렬로 수정 -->
+
         <LinearLayout
             android:id="@+id/start_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="10dp"
+            android:layout_margin="5dp"
             android:background="@drawable/rounded_start_button"
             android:elevation="5dp"
             android:gravity="center"
@@ -199,6 +245,30 @@
             android:padding="15dp"
             android:scaleType="fitCenter"
             android:src="@drawable/stop_solid"
-            android:visibility="gone" /> <!-- 정지 버튼은 GONE으로 초기화 -->
+            android:visibility="gone" />
+
+        <!-- 정지 버튼은 GONE으로 초기화 -->
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/post_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/rounded_user_plog_inform"
+        android:padding="5dp"
+        android:visibility="visible">
+
+        <ImageButton
+            android:id="@+id/post_button"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:backgroundTint="@android:color/transparent"
+            android:maxWidth="50dp"
+            android:maxHeight="50dp"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/locationpost" />
+    </LinearLayout>
+
 </RelativeLayout>

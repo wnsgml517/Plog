@@ -16,6 +16,8 @@ import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -23,6 +25,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.DialogFragment
 import com.esg.plogging.R
 import com.esg.plogging.databinding.ActivityMapBinding
 import net.daum.mf.map.api.*
@@ -38,6 +41,9 @@ class MapActivity : AppCompatActivity() {
     lateinit var binding : ActivityMapBinding
     private lateinit var mapView : MapView
     var centerPoint : MapPoint? = null // 첫 시작 위치
+    var postPoint : MapPoint? = null // 제보 위치
+    var postMarker : MapPOIItem? = null // 제보 마커
+
 
 
 
@@ -106,8 +112,8 @@ class MapActivity : AppCompatActivity() {
 
 
         //트래킹 모드 설정
-        mapView.currentLocationTrackingMode =
-        MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
+        //mapView.currentLocationTrackingMode =
+        //MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
 
 
         mapView.setPOIItemEventListener(eventListener)  // 마커 클릭 이벤트 리스너 등록
@@ -355,6 +361,56 @@ class MapActivity : AppCompatActivity() {
 
         }
 
+        // 현 지도에서 위치 재검색 버튼 클릭한 경우
+        binding.updateLayout.setOnClickListener(){
+            // 지금 현재 보여지는 좌표 위치를 기준으로 ... 마커 추가!
+            addMarkers(trashLocationData)
+            // 위치 재검색 버튼 안보여지게 하기...
+            binding.updateLayout.visibility = View.GONE
+        }
+
+        // 지도에서 위치 제보하기 버튼 클릭한 경우
+        binding.postButton.setOnClickListener(){
+
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("위치 제보")
+                .setMessage("쓰레기통 혹은 화장실 위치를 제보하시겠습니까?")
+                .setPositiveButton("네") { dialog, _ ->
+                    //일시 정지
+                    isRecording = false
+                    timerHandler.removeCallbacks(timerRunnable)
+                    dialog.dismiss()
+
+                    // 모양 변경
+                    binding.playButton.setImageResource(R.drawable.play_solid)
+
+                    //모달 창 생성
+                    val bottomSheetPostFragment = CustomBottomSheetPostFragment.newInstance(Location("now").longitude,Location("now").latitude)
+
+                    // 다이얼로그가 외부 터치에 의해 종료되지 않도록 설정
+                    bottomSheetPostFragment.isCancelable = false
+
+                    // 현재 지도 중심 좌표 알아내기
+                    postPoint = mapView.getMapCenterPoint()
+
+                    createpostMarker(postPoint!!, mapView)
+
+
+                    bottomSheetPostFragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.AppBottomSheetDialogTheme)
+                    bottomSheetPostFragment.show(supportFragmentManager, bottomSheetPostFragment.tag)
+
+
+                }
+                .setNegativeButton("아니오") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .setCancelable(false)
+
+            val dialog = builder.create()
+            dialog.show()
+
+        }
+
 
         //로그인이 되어있다면 플로깅 스팟 불러오기
         //if(loginAccess)
@@ -372,7 +428,25 @@ class MapActivity : AppCompatActivity() {
         // 카카오 key 값 얻기
         //getKakaoMapHashKey(this)
     }
-
+    fun createpostMarker(postPoint : MapPoint, mapView : MapView)
+    {
+        if(postMarker != null)
+        {
+            // 기존 중심 좌표 마커 삭제
+            mapView.removePOIItem(postMarker)
+        }
+        // 중심 좌표 마커 그리기
+        postMarker = MapPOIItem()
+        postMarker?.apply {
+            itemName = "제보합니다"
+            mapPoint = postPoint
+            markerType = MapPOIItem.MarkerType.CustomImage // 마커타입을 커스텀 마커로 지정.
+            customImageResourceId = R.drawable.locationpost
+            isCustomImageAutoscale = false
+            setCustomImageAnchor(0.5f,1.0f)
+        }
+        mapView.addPOIItem(postMarker)
+    }
     private fun getBitmapFromView(view: View): Bitmap {
         view.setLayoutParams(
             LinearLayout.LayoutParams(
@@ -482,12 +556,12 @@ class MapActivity : AppCompatActivity() {
         override fun onMapViewCenterPointMoved(p0: MapView?, movedCenter: MapPoint?) {
 
             if (mapActivity.isTrashButtonClicked) {
-                mapActivity.addMarkers(mapActivity.trashLocationData)
-                // 지도 중심 좌표가 이동한 경우
-                System.out.println("지도 중심 변경")
-            }
-            System.out.println("지도 중심 변경")
+                mapActivity.binding.updateLayout.visibility = View.VISIBLE
+                mapActivity.postPoint = movedCenter
 
+                // post마커 위치 변경~
+                mapActivity.createpostMarker(movedCenter!!, mapActivity.mapView)
+            }
         }
 
         override fun onMapViewZoomLevelChanged(p0: MapView?, p1: Int) {
@@ -566,20 +640,28 @@ class MapActivity : AppCompatActivity() {
         override fun getCalloutBalloon(poiItem: MapPOIItem?): View {
             // 마커 클릭 시 나오는 말풍선
             System.out.println(isTrashButtonClicked)
-            if(isTrashButtonClicked || isToiletButtonClicked){
+            /*if(isTrashButtonClicked || isToiletButtonClicked){
+                name.text = poiItem?.itemName  // 해당 마커의 정보 이용 가능
+                total.text = ""
+                distance.text = ""
+                return mCalloutBalloon
+            }
+*/
+            val date: ArrayList<String> = if (poiItem?.itemName?.contains(" ") == true) {
+                poiItem.itemName.split(" ") as ArrayList<String>
+            } else {
                 name.text = poiItem?.itemName  // 해당 마커의 정보 이용 가능
                 total.text = ""
                 distance.text = ""
                 return mCalloutBalloon
             }
 
-            val date : ArrayList<String> = poiItem?.itemName?.split(" ") as ArrayList<String>
-
             System.out.println(date)
             System.out.println("마커야~~")
             name.text = date[0]   // 해당 마커의 정보 이용 가능
             total.text = "총 ${date[1]}회 방문"
             distance.text = date[2]+"m"
+
             return mCalloutBalloon
         }
 
@@ -661,17 +743,7 @@ class MapActivity : AppCompatActivity() {
                 System.out.println("종료시간 : " + endTime.toString())
                 dialog.dismiss()
 
-                //기존 페이지로 초기화.
-                binding.startButton.visibility = View.VISIBLE
-                binding.startLayout.visibility = View.VISIBLE
-                binding.startTextview.visibility = View.VISIBLE
 
-                binding.playButton.visibility = View.GONE
-                binding.stopButton.visibility = View.GONE
-
-                binding.nowView.visibility = View.GONE
-                binding.timerTextView.visibility = View.GONE
-                binding.distanceTextView.visibility = View.GONE
 
 
                 // 기록 모달창 슬라이딩 윈도우
@@ -687,6 +759,7 @@ class MapActivity : AppCompatActivity() {
                 }
 
                 val bottomSheetFragment = CustomBottomSheetFragment.newInstance(pausedTime, distanceInMeters, pathString, Location("now").longitude,Location("now").latitude)
+                bottomSheetFragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.AppBottomSheetDialogTheme)
                 bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
 
                 // 기록 페이지로 이동
