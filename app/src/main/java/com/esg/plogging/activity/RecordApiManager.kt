@@ -62,6 +62,59 @@ class RecordApiManager {
             }.start()
         }
 
+        fun locationPost(userid: String,
+                         RegionID : Int ,
+                         locationname : String,
+                         latitude : Double,
+                         longitude : Double,
+                         separator : Int,
+                         callback: (Boolean) -> Unit) {
+            Thread {
+                try {
+                    val serverAddress = "http://13.209.47.199/insertLog.php"
+                    val url = URL(serverAddress)
+
+                    val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+                    connection.requestMethod = "POST"
+                    connection.doInput = true
+                    connection.doOutput = true
+                    connection.useCaches = false
+
+
+                    val data = "UserID=${userid}"+
+                            "&RegionID=${RegionID}"+
+                            "&locationName=${locationname}"+
+                            "&latitude=${latitude}"+
+                            "&longitude=${longitude}"+
+                            "&Separator=${separator}"
+
+                    val os: OutputStream = connection.outputStream
+                    val writer = OutputStreamWriter(os)
+                    writer.write(data, 0, data.length)
+                    writer.flush()
+                    writer.close()
+
+                    val `is`: InputStream = connection.inputStream
+                    val isr = InputStreamReader(`is`)
+                    val reader = BufferedReader(isr)
+                    val buffer = StringBuffer()
+                    while (true) {
+                        val line: String = reader.readLine() ?: break
+                        buffer.append("$line\n")
+                    }
+                    System.out.println(buffer.toString())
+                    System.out.println("위치제보~~")
+                    // 서버 응답 확인
+                    val success = buffer.toString().contains("Success")
+                    callback(success)
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    callback(false)
+                }
+            }.start()
+        }
+
         fun read(key : String, value : String?, Table : String, callback: ( ArrayList<PloggingLogData>?) -> Unit){
             Thread {
                 try {
@@ -197,6 +250,67 @@ class RecordApiManager {
 
                     // dataList에는 변환된 TrashLocationData 객체들이 들어있음
                     callback(Route)
+
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    callback(null)
+                }
+            }.start()
+        }
+        fun regionRead(key : String, value : String?, Table : String, callback: (Int?) -> Unit){
+            Thread {
+                try {
+                    val serverAddress = "http://13.209.47.199/readData.php";
+                    val url = URL(serverAddress)
+
+                    val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+                    connection.requestMethod = "POST"
+                    connection.doInput = true
+                    connection.doOutput = true
+                    connection.useCaches = false
+
+
+                    val data = "key=" + key + "&Table=" + Table+"&value="+value;
+
+                    //4. 데이터를 아웃풋 스트림을 이용해서 직접 내보내기
+                    val os: OutputStream = connection.getOutputStream()
+                    val writer = OutputStreamWriter(os) //
+                    writer.write(data, 0, data.length) //1024를 넘지 않는 사이즈로 만드는 게 좋다
+                    writer.flush()
+                    writer.close()
+
+                    //5. 서버(postText.php)에서 에코한 응답문자열 읽어오기
+                    val `is`: InputStream = connection.getInputStream()
+                    val isr = InputStreamReader(`is`)
+                    val reader = BufferedReader(isr)
+                    val buffer = StringBuffer()
+                    while (true) {
+                        val line: String = reader.readLine() ?: break
+                        buffer.append(
+                            """
+                        $line
+                        
+                        """.trimIndent()
+                        )
+                    }
+
+                    val jsonStr = buffer.toString()
+                    System.out.println("regionID")
+                    System.out.println(jsonStr)
+
+                    val jsonObject = JSONObject(jsonStr)
+                    val keys = jsonObject.keys()
+                    keys.next()
+
+                    val key = keys.next() as String
+                    val route = jsonObject.getString(key)
+                    val dataitem = JSONObject(route)
+                    val regionID  = dataitem.getString("Region_Code").toInt()
+
+
+                    // dataList에는 변환된 TrashLocationData 객체들이 들어있음
+                    callback(regionID)
 
 
                 } catch (e: Exception) {

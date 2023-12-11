@@ -31,6 +31,9 @@ class PlogActivity : AppCompatActivity() {
     var pathString : String? = null
     var path: MutableList<MapPoint>? = null
     private lateinit var mapView : MapView
+    var dataList: ArrayList<PloggingLogData> = ArrayList()
+
+    var selectedStamp: PloggingLogData? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,109 +54,132 @@ class PlogActivity : AppCompatActivity() {
 
         val index: Int = intent.getIntExtra("index", -1)
         // 클릭한 플로깅 로그 객체 들고오기
-        val selectedStamp: PloggingLogData? =
-            intent.intentSerializable("selectedStamp", PloggingLogData::class.java)
-
-        //이동 경로 들고와서 보여주기
-        val trailID = selectedStamp?.trailID
-        RecordApiManager.pathRead("Trail_ID", trailID, "WalkingTrail") { success ->
-            if (success != null) {
-                // 성공적으로 데이터를 받아왔을 때의 처리
-                pathString = success
-
-                path = pathString?.split(";")?.mapNotNull { pathCoordinate ->
-                    val coordinates = pathCoordinate.split(",")
-                    if (coordinates.size == 2) {
-                        val latitude = coordinates[0].toDouble()
-                        val longitude = coordinates[1].toDouble()
-                        MapPoint.mapPointWithGeoCoord(latitude, longitude)
-                    } else {
-                        // Handle invalid coordinates
-                        null
-                    }
-                }?.toMutableList() ?: mutableListOf()
-
+        //스탬프 정보(로그 정보) 읽어오기
+        RecordApiManager.read("UserID",loginData?.logUserID, "PloggingLog") { success ->
+            if (success!=null) {
+                // 기록 불러오기 성공 처리
+                dataList = success
                 runOnUiThread {
-                    // 들고온 경로 폴리라인 그리기
-                    updatePathPolyline()
-                }
-                System.out.println(path)
-                System.out.println("루트 들고옴!!!!")
-            } else {
-                // 통신 실패 또는 데이터 오류 처리
-                System.out.println("통신 실패")
-            }
-        }
 
-        //몇 번째 업적인지
-        binding.plogIndex.setText(index.toString() + "번째 업적")
+                    selectedStamp = dataList[index]
 
-        val encodedImage = selectedStamp?.TrashStroagePhotos
-        // 문자열을 디코딩하여 비트맵으로 변환
-        if (!encodedImage.isNullOrEmpty()) {
-            val decodedBitmap = decodeBase64ToBitmap(encodedImage)
-            //System.out.println(encodedImage)
-            //val decodedImageBytes = Base64.decode(encodedImage, Base64.DEFAULT)
-            //val decodedBitmap = BitmapFactory.decodeByteArray(decodedImageBytes, 0, decodedImageBytes.size)
-            //val decodedBitmap: Bitmap? = StringToBitmaps(encodedImage)
-            if (decodedBitmap != null) {
-                System.out.println(decodedBitmap)
-                binding.userImageView.setImageBitmap(decodedBitmap)
-            } else {
-                // Handle decoding failure
-                Toast.makeText(this, "Failed to decode image", Toast.LENGTH_SHORT).show()
-            }
-        } else {
-            System.out.println("이미지 없음!!!")
-        }
+                    //이동 경로 들고와서 보여주기
+                    val trailID = selectedStamp?.trailID
+                    RecordApiManager.pathRead("Trail_ID", trailID, "WalkingTrail") { success ->
+                        if (success != null) {
+                            // 성공적으로 데이터를 받아왔을 때의 처리
+                            pathString = success
 
-        if (selectedStamp != null) {
-            //플로깅 정보 설정
-            val date : ArrayList<String> = selectedStamp?.PloggingDate?.split(" ") as ArrayList<String>
-            binding.plogDate.setText(date[0])
-            binding.plogDistance.setText(String.format("%.2f", selectedStamp?.PloggingDistance)+"km")
-            binding.plogName.setText(selectedStamp?.locationName)
-            //한줄평 설정
-            binding.plogOneReview.setText(selectedStamp?.OneLineReview)
-            //거리 설정
-            binding.distanceTextView.setText(String.format("%.2f", selectedStamp?.PloggingDistance)+"km")
-            //소요 시간 설정
-            binding.elapsedTimeTextView.setText(formatElapsedTime(selectedStamp?.PloggingTime))
-        }
+                            path = pathString?.split(";")?.mapNotNull { pathCoordinate ->
+                                val coordinates = pathCoordinate.split(",")
+                                if (coordinates.size == 2) {
+                                    val latitude = coordinates[0].toDouble()
+                                    val longitude = coordinates[1].toDouble()
+                                    MapPoint.mapPointWithGeoCoord(latitude, longitude)
+                                } else {
+                                    // Handle invalid coordinates
+                                    null
+                                }
+                            }?.toMutableList() ?: mutableListOf()
 
-        binding.deleteButton.setOnClickListener(){
-            if(trailID!=null &&loginData!=null) {
-                loginData.logUserID?.let { it1 ->
-                    DeleteApiManager.delete("PloggingLog", "Trail_ID", trailID, it1) { success ->
-                        System.out.println(trailID)
-                        System.out.println(it1)
-                        System.out.println("삭제하러가자ㅠ")
-                        if (success) {
-                            // 삭제 성공 처리
                             runOnUiThread {
-                                val intent = Intent(applicationContext, MyPageActivity::class.java)
-                                startActivity(intent)
-                                Toast.makeText(this, "삭제 성공", Toast.LENGTH_SHORT).show()
-                                // 원하는 다음 화면으로 이동하거나 추가적인 작업 수행
+                                // 들고온 경로 폴리라인 그리기
+                                updatePathPolyline()
                             }
+                            System.out.println(path)
+                            System.out.println("루트 들고옴!!!!")
                         } else {
-                            // 삭제 실패 처리
-                            runOnUiThread {
-                                Toast.makeText(this, "삭제 실패", Toast.LENGTH_SHORT).show()
+                            // 통신 실패 또는 데이터 오류 처리
+                            System.out.println("통신 실패")
+                        }
+                    }
+
+
+                    val encodedImage = selectedStamp?.TrashStroagePhotos
+                    // 문자열을 디코딩하여 비트맵으로 변환
+                    if (!encodedImage.isNullOrEmpty()) {
+                        val decodedBitmap = decodeBase64ToBitmap(encodedImage)
+                        //System.out.println(encodedImage)
+                        //val decodedImageBytes = Base64.decode(encodedImage, Base64.DEFAULT)
+                        //val decodedBitmap = BitmapFactory.decodeByteArray(decodedImageBytes, 0, decodedImageBytes.size)
+                        //val decodedBitmap: Bitmap? = StringToBitmaps(encodedImage)
+                        if (decodedBitmap != null) {
+                            System.out.println(decodedBitmap)
+                            binding.userImageView.setImageBitmap(decodedBitmap)
+                        } else {
+                            // Handle decoding failure
+                            Toast.makeText(this, "Failed to decode image", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        System.out.println("이미지 없음!!!")
+                    }
+
+                    if (selectedStamp != null) {
+                        //플로깅 정보 설정
+                        binding.plogDate.setText(selectedStamp?.PloggingDate)
+                        binding.plogName.setText(selectedStamp?.locationName)
+                        //한줄평 설정
+                        binding.plogOneReview.setText(selectedStamp?.OneLineReview)
+                        //거리 설정
+                        binding.distanceTextView.setText(String.format("%.1f", selectedStamp?.PloggingDistance?.div(1000))+"km")
+                        //소요 시간 설정
+                        binding.elapsedTimeTextView.setText(formatElapsedTime(selectedStamp?.PloggingTime))
+                    }
+
+                    binding.deleteButton.setOnClickListener(){
+                        if(trailID!=null &&loginData!=null) {
+                            loginData.logUserID?.let { it1 ->
+                                DeleteApiManager.delete("PloggingLog", "Trail_ID", trailID, it1) { success ->
+                                    System.out.println(trailID)
+                                    System.out.println(it1)
+                                    System.out.println("삭제하러가자ㅠ")
+                                    if (success) {
+                                        // 삭제 성공 처리
+                                        runOnUiThread {
+                                            val intent = Intent(applicationContext, MyPageActivity::class.java)
+                                            startActivity(intent)
+                                            Toast.makeText(this, "삭제 성공", Toast.LENGTH_SHORT).show()
+                                            // 원하는 다음 화면으로 이동하거나 추가적인 작업 수행
+                                        }
+                                    } else {
+                                        // 삭제 실패 처리
+                                        runOnUiThread {
+                                            Toast.makeText(this, "삭제 실패", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
+                    binding.previousButton.setOnClickListener(){
+                        val intent = Intent(applicationContext, MyPageActivity::class.java)
+                        startActivity(intent)
+                    }
+
+                    mapViewContainer = binding.mapView as ViewGroup
+                    mapViewContainer!!.addView(mapView)
+                    setContentView(binding.root)
+
+                    Toast.makeText(this, "기록 불러오기 성공", Toast.LENGTH_SHORT).show()
+                    // 원하는 다음 화면으로 이동하거나 추가적인 작업 수행
+                }
+            } else {
+
+                // 기록 불러오기 실패 처리
+                runOnUiThread {
+                    Toast.makeText(this, "기록 없음", Toast.LENGTH_SHORT).show()
                 }
             }
         }
-        binding.previousButton.setOnClickListener(){
-            val intent = Intent(applicationContext, MyPageActivity::class.java)
-            startActivity(intent)
-        }
 
-        mapViewContainer = binding.mapView as ViewGroup
-        mapViewContainer!!.addView(mapView)
-        setContentView(binding.root)
+        //val selectedStamp: PloggingLogData? =
+        //    intent.intentSerializable("selectedStamp", PloggingLogData::class.java)
+
+
+
+
+
+
     }
     fun decodeBase64ToBitmap(base64String: String): Bitmap? {
         try {
@@ -185,7 +211,7 @@ class PlogActivity : AppCompatActivity() {
     // 경로를 폴리라인으로 그리는 메서드
     // 경로를 폴리라인으로 그리는 메서드
     private fun updatePathPolyline() {
-        removeAllPolylines() // 기존의 폴리라인 삭제
+
         // 경로의 각 지점을 폴리라인에 추가
         for (point in path!!) {
             mapPolyline.addPoint(point)

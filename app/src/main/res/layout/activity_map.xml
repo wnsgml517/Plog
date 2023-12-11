@@ -255,7 +255,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/rounded_user_plog_inform"
         android:padding="5dp"
         android:visibility="visible">
 

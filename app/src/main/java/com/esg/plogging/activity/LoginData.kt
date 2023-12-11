@@ -9,5 +9,6 @@ data class LoginData(
     val bio: String?,
     val totalLog: Int?,
     val totalDistance: Double?,
-    val totalTime: Any? // 여기서 Any?는 어떤 형식의 데이터든 받을 수 있도록 하기 위함입니다.
+    val totalTime: Any?,
+    val profilePhoto : String
 )

@@ -36,6 +36,8 @@ class MyPageActivity : AppCompatActivity() {
             // 개인정보 셋팅
             binding.usernameTextView.setText(loginData.nickname)
             binding.distanceTextView.setText(String.format("%.1f km", totalDistance))
+            if(!loginData.profilePhoto.equals(" "))
+                binding.userImageView.setImageBitmap(decodeBase64ToBitmap(loginData.profilePhoto))
 
             //binding.elapsedTimeTextView.setText(loginData.totalTime.toString())
             updateTimer(loginData.totalTime as Int)
@@ -150,6 +152,7 @@ class MyPageActivity : AppCompatActivity() {
             )
             informparams.gravity = CENTER
             informLayout.layoutParams = informparams
+            informLayout.gravity = CENTER
             informLayout.orientation = LinearLayout.VERTICAL
 
             informLayout.setPadding(3, 3, 3, 3)
@@ -215,7 +218,7 @@ class MyPageActivity : AppCompatActivity() {
                 // PlogActivity로 이동하는 Intent 생성
                 val intent = Intent(this, PlogActivity::class.java).apply{
                     // 선택된 스탬프 객체를 인텐트에 추가
-                    putExtra("selectedStamp", selectedStamp)
+                    //putExtra("selectedStamp", selectedStamp)
                     putExtra("index",clickedIndex)
 
                 }

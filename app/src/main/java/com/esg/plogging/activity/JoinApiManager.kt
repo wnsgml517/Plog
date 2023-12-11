@@ -7,7 +7,7 @@ import java.net.URL
 // JoinApiManager.kt
 class JoinApiManager {
     companion object {
-        fun join(nickname: String, userID: String, passwd: String, callback: (Boolean) -> Unit) {
+        fun join(nickname: String, userID: String, passwd: String, profile: String, callback: (Boolean) -> Unit) {
             Thread {
                 try {
                     val serverAddress = "http://13.209.47.199/signup.php"
@@ -19,7 +19,7 @@ class JoinApiManager {
                     connection.doOutput = true
                     connection.useCaches = false
 
-                    val data = "NickName=$nickname&UserID=$userID&Passwd=$passwd"
+                    val data = "NickName=$nickname&UserID=$userID&Passwd=$passwd&ProfilePhoto=${profile}"
 
                     val os: OutputStream = connection.outputStream
                     val writer = OutputStreamWriter(os)

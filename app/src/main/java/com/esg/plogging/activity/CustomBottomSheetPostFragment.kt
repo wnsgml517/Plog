@@ -25,6 +25,7 @@ class CustomBottomSheetPostFragment : BottomSheetDialogFragment() {
     var encodedImage : String? = null
     var bitmap : Bitmap? = null // 이미지 비트맵 값.
     private var separator: Int = 0 // 초기값은 0으로 설정
+    var regionID : Int  = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,6 +35,7 @@ class CustomBottomSheetPostFragment : BottomSheetDialogFragment() {
         // 위치 정보 들고오기
         val latitude = arguments?.getDouble("latitude")
         val longitude = arguments?.getDouble("longitude")
+        val regionID = arguments?.getInt("regionID")
 
         //로그인 정보
         val myApp = activity?.application as Plogger
@@ -74,16 +76,20 @@ class CustomBottomSheetPostFragment : BottomSheetDialogFragment() {
         // 저장하기 제보
         binding.saveButton.setOnClickListener() {
 
-            /*// TODO: 감상평을 저장하거나 처리하는 로직 추가
-            if (path != null && distance != null && loginData?.logUserID != null && encodedImage != null
-                && longitude != null && latitude != null && elapsedTime != null) {
 
-                RecordApiManager.record(
-                    ploggingLogData,
-                    path,
+            if (binding.editTextLocation.text != null
+                && loginData?.logUserID != null
+                && regionID != null
+                && longitude != null
+                && latitude != null) {
+
+                RecordApiManager.locationPost(
+                    loginData.logUserID,
+                    regionID,
+                    binding.editTextLocation.text.toString(),
                     longitude,
                     latitude,
-                    34012
+                    separator
                 ) { success ->
                     if (success) {
                         // 가입 성공 처리
@@ -98,7 +104,7 @@ class CustomBottomSheetPostFragment : BottomSheetDialogFragment() {
                     }
                 }
             }
-            dismiss() // 기록 창 닫기*/
+            dismiss() // 기록 창 닫기
         }
 
         val view = inflater.inflate(R.layout.activity_post, container, false)
@@ -109,11 +115,12 @@ class CustomBottomSheetPostFragment : BottomSheetDialogFragment() {
 
         private const val PICK_IMAGE_REQUEST = 1
 
-        fun newInstance(longitude : Double, latitude : Double): CustomBottomSheetPostFragment {
+        fun newInstance(longitude : Double, latitude : Double, regionID : Int): CustomBottomSheetPostFragment {
             val fragment = CustomBottomSheetPostFragment()
             val args = Bundle()
             args.putDouble("longitude", longitude)
             args.putDouble("latitude", latitude)
+            args.putInt("regionID", regionID)
             fragment.arguments = args
             return fragment
         }

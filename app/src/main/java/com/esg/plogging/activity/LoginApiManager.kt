@@ -63,9 +63,11 @@ class LoginApiManager {
                     val TotalLog = jo.getInt("TotalLog")
                     val TotalDistance = jo.getDouble("TotalDistance")
                     val TotalTime = jo.get("TotalTime")
+                    //val profilePhoto = jo.getString("ProfilePhoto")
+                    val profilePhoto =" "
 
                     //로그인 데이터 저장
-                    val loginData = LoginData(logUserID, nickname, Bio, TotalLog, TotalDistance,TotalTime)
+                    val loginData = LoginData(logUserID, nickname, Bio, TotalLog, TotalDistance,TotalTime, profilePhoto)
                     callback(loginData)
 
                 } catch (e: Exception) {

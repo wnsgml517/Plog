@@ -2,29 +2,54 @@
 <!-- res/layout/activity_login.xml -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activity.JoinActivity">
 
     <!-- 로고 이미지 -->
+
     <ImageView
         android:id="@+id/logoImageView"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="40dp"
         android:contentDescription="Logo Image"
         android:src="@drawable/plog_logo2" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/photoImage"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_below="@id/logoImageView"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:elevation="20dp"
+        app:cardCornerRadius="50dp">
+
+        <ImageView
+            android:id="@+id/photoImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:adjustViewBounds="false"
+            android:padding="10dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/user_solid" />
+    </androidx.cardview.widget.CardView>
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/NicknameInputLayout"
+        style="@style/CustomTextInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/logoImageView"
-        android:layout_marginTop="30dp"
+        android:layout_below="@id/photoImage"
         android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
         android:layout_marginEnd="30dp"
-        style="@style/CustomTextInputLayout"
         android:backgroundTint="#8BBF73">
 
         <com.google.android.material.textfield.TextInputEditText
