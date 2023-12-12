@@ -63,8 +63,7 @@ class LoginApiManager {
                     val TotalLog = jo.getInt("TotalLog")
                     val TotalDistance = jo.getDouble("TotalDistance")
                     val TotalTime = jo.get("TotalTime")
-                    //val profilePhoto = jo.getString("ProfilePhoto")
-                    val profilePhoto =" "
+                    val profilePhoto = jo.getString("ProfilePhoto")
 
                     //로그인 데이터 저장
                     val loginData = LoginData(logUserID, nickname, Bio, TotalLog, TotalDistance,TotalTime, profilePhoto)

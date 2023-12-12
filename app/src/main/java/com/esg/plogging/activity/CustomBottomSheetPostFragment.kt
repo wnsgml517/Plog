@@ -21,6 +21,12 @@ import java.time.format.DateTimeFormatter
 
 class CustomBottomSheetPostFragment : BottomSheetDialogFragment() {
 
+    interface BottomSheetPostListener {
+        fun onBottomSheetPostDismissed(data: Boolean)
+    }
+
+    private var bottomSheetPostListener: BottomSheetPostListener? = null
+
     private lateinit var binding: ActivityPostBinding
     var encodedImage : String? = null
     var bitmap : Bitmap? = null // 이미지 비트맵 값.
@@ -76,6 +82,8 @@ class CustomBottomSheetPostFragment : BottomSheetDialogFragment() {
         // 저장하기 제보
         binding.saveButton.setOnClickListener() {
 
+            // 저장이 성공했을 때 메인 액티비티로 값을 전달
+            bottomSheetPostListener?.onBottomSheetPostDismissed(true)
 
             if (binding.editTextLocation.text != null
                 && loginData?.logUserID != null
@@ -92,6 +100,7 @@ class CustomBottomSheetPostFragment : BottomSheetDialogFragment() {
                     separator
                 ) { success ->
                     if (success) {
+
                         // 가입 성공 처리
                         activity?.runOnUiThread {
                             System.out.println("기록 성공")
@@ -115,8 +124,10 @@ class CustomBottomSheetPostFragment : BottomSheetDialogFragment() {
 
         private const val PICK_IMAGE_REQUEST = 1
 
-        fun newInstance(longitude : Double, latitude : Double, regionID : Int): CustomBottomSheetPostFragment {
+        fun newInstance(longitude : Double, latitude : Double, regionID : Int, listener: BottomSheetPostListener): CustomBottomSheetPostFragment {
             val fragment = CustomBottomSheetPostFragment()
+            fragment.bottomSheetPostListener = listener
+
             val args = Bundle()
             args.putDouble("longitude", longitude)
             args.putDouble("latitude", latitude)

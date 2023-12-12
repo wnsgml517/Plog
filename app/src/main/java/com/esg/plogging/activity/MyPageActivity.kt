@@ -36,6 +36,7 @@ class MyPageActivity : AppCompatActivity() {
             // 개인정보 셋팅
             binding.usernameTextView.setText(loginData.nickname)
             binding.distanceTextView.setText(String.format("%.1f km", totalDistance))
+
             if(!loginData.profilePhoto.equals(" "))
                 binding.userImageView.setImageBitmap(decodeBase64ToBitmap(loginData.profilePhoto))
 
@@ -76,7 +77,7 @@ class MyPageActivity : AppCompatActivity() {
         }
         binding.nextButton.setOnClickListener() {
             // 로그아웃하기
-            loginData = null
+            myApp.loginData = null
             val intent = Intent(applicationContext, MapActivity::class.java)
             startActivity(intent)
 
@@ -130,6 +131,7 @@ class MyPageActivity : AppCompatActivity() {
                 200,
                 200 // 또는 원하는 높이
             )
+
             imageParams.setMargins(20 ,20,20,20)
             imageParams.gravity = CENTER
             imageView.setPadding(20,20,20,20)
@@ -140,7 +142,9 @@ class MyPageActivity : AppCompatActivity() {
             imageView.adjustViewBounds = false
             imageView.elevation = 8f // 8dp로 설정
 
+            //imageView.setImageBitmap(decodeBase64ToBitmap(stamp.TrashStroagePhotos)) // 이미지 리소스 설정
             imageView.setImageBitmap(decodeBase64ToBitmap(stamp.TrashStroagePhotos)) // 이미지 리소스 설정
+
             parentLayout.addView(imageView)
 
 
@@ -152,7 +156,7 @@ class MyPageActivity : AppCompatActivity() {
             )
             informparams.gravity = CENTER
             informLayout.layoutParams = informparams
-            informLayout.gravity = CENTER
+            informLayout.gravity = CENTER_VERTICAL
             informLayout.orientation = LinearLayout.VERTICAL
 
             informLayout.setPadding(3, 3, 3, 3)
@@ -230,8 +234,7 @@ class MyPageActivity : AppCompatActivity() {
     fun decodeBase64ToBitmap(base64String: String): Bitmap? {
         try {
             // 문자 바꾸기(POST 방식으로 값 읽고 쓰면서 값이 바뀌어서 저장됨)
-            val cleanBase64 = base64String.replace(" ", "+").replace("_", "/").replace("-","+")
-
+            val cleanBase64 = base64String.replace("\\", "")
             val decodedBytes = Base64.decode(cleanBase64, Base64.DEFAULT)
             return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
         } catch (e: Exception) {

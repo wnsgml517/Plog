@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -60,15 +61,26 @@
         android:orientation="vertical">
 
 
-        <ImageView
-            android:id="@+id/userImageView"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/photoImage"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/profile"
-            android:padding="35dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/user_solid" />
+            android:layout_below="@id/logoImageView"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            app:cardBackgroundColor="#FFFFFF"
+            app:cardCornerRadius="80dp"
+            app:cardElevation="4dp">
+
+            <ImageView
+                android:id="@+id/userImageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:scaleType="centerCrop"
+                android:src="@drawable/zzang" />
+
+        </androidx.cardview.widget.CardView>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -130,7 +142,6 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="15dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical"
@@ -158,10 +169,16 @@
 
             </LinearLayout>
 
+            <!-- Divider between the first and second LinearLayout -->
+            <View
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:background="#CCCCCC" /> <!-- You can set the color as per your design -->
+
+
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="15dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical"
@@ -188,14 +205,19 @@
 
             </LinearLayout>
 
+            <View
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:background="#CCCCCC" /> <!-- You can set the color as per your design -->
+
+
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_margin="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:orientation="vertical"
-                android:padding="3dp">
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/elapsedTimeTextView"
@@ -240,6 +262,7 @@
                 android:layout_height="wrap_content"
                 android:columnCount="1">
                 <!--스탬프 동적 생성될 부분-->
+
             </GridLayout>
         </ScrollView>
     </LinearLayout>

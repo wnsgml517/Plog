@@ -127,11 +127,13 @@ class JoinActivity : AppCompatActivity() {
                 // 가입 성공 처리
                 runOnUiThread {
                     Toast.makeText(this, "가입 성공", Toast.LENGTH_SHORT).show()
+                    finish() // 화면 닫기
                     // 원하는 다음 화면으로 이동하거나 추가적인 작업 수행
                 }
             } else {
                 // 가입 실패 처리
                 runOnUiThread {
+                    finish() // 화면 닫기
                     Toast.makeText(this, "가입 실패", Toast.LENGTH_SHORT).show()
                 }
             }

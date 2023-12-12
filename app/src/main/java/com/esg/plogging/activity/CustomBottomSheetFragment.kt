@@ -21,6 +21,11 @@ import java.time.format.DateTimeFormatter
 
 class CustomBottomSheetFragment : BottomSheetDialogFragment() {
 
+    interface BottomSheetListener {
+        fun onBottomSheetDismissed(data: Boolean)
+    }
+    private var bottomSheetListener: BottomSheetListener? = null
+
     private lateinit var binding: ActivitySaveBinding
     private lateinit var mbinding: ActivityMapBinding
     var encodedImage : String? = null
@@ -39,6 +44,7 @@ class CustomBottomSheetFragment : BottomSheetDialogFragment() {
         val path = arguments?.getString("path")
         val latitude = arguments?.getDouble("latitude")
         val longitude = arguments?.getDouble("longitude")
+        val regionID = arguments?.getInt("regionID")
 
         //로그인 정보
         val myApp = activity?.application as Plogger
@@ -111,7 +117,8 @@ class CustomBottomSheetFragment : BottomSheetDialogFragment() {
             val TrashStroagePhotos = encodedImage
             val locationName = binding.editTextLocation.text.toString()
 
-
+            // 저장이 성공했을 때 메인 액티비티로 값을 전달
+            bottomSheetListener?.onBottomSheetDismissed(true)
 
 
 
@@ -121,6 +128,7 @@ class CustomBottomSheetFragment : BottomSheetDialogFragment() {
                 var ploggingLogData = PloggingLogData(loginData?.logUserID, getCurrentDateTime(),
                     locationName,distance, encodedImage!!,OneLineReview,elapsedTime,0,0)
 
+                // 로그 기록
                 RecordApiManager.record(
                     ploggingLogData,
                     path,
@@ -129,22 +137,13 @@ class CustomBottomSheetFragment : BottomSheetDialogFragment() {
                     34012
                 ) { success ->
                     if (success) {
+                        System.out.println("기록 성공")
                         // 가입 성공 처리
                         activity?.runOnUiThread {
-                            System.out.println("기록 성공")
-                            //기존 페이지로 초기화.
-                            mbinding.startButton.visibility = View.VISIBLE
-                            mbinding.startLayout.visibility = View.VISIBLE
-                            mbinding.startTextview.visibility = View.VISIBLE
 
-                            mbinding.playButton.visibility = View.GONE
-                            mbinding.stopButton.visibility = View.GONE
-
-                            mbinding.nowView.visibility = View.GONE
-                            mbinding.timerTextView.visibility = View.GONE
-                            mbinding.distanceTextView.visibility = View.GONE
-                        }
+                                                    }
                     } else {
+                        System.out.println("기록 실패")
                         // 가입 실패 처리
                         activity?.runOnUiThread {
                             System.out.println("기록 실패")
@@ -152,6 +151,8 @@ class CustomBottomSheetFragment : BottomSheetDialogFragment() {
                     }
                 }
             }
+
+
             dismiss() // 기록 창 닫기
         }
 
@@ -209,14 +210,18 @@ class CustomBottomSheetFragment : BottomSheetDialogFragment() {
 
         private const val PICK_IMAGE_REQUEST = 1
 
-        fun newInstance(elapsedTime: Int, distance: Double, path: String, longitude : Double, latitude : Double): CustomBottomSheetFragment {
+        fun newInstance(elapsedTime: Int, distance: Double, path: String, longitude : Double, latitude : Double, regionID : Int, listener: BottomSheetListener): CustomBottomSheetFragment {
             val fragment = CustomBottomSheetFragment()
             val args = Bundle()
+
+            fragment.bottomSheetListener = listener
             args.putInt("elapsedTime", elapsedTime)
             args.putDouble("distance", distance)
             args.putDouble("longitude", longitude)
             args.putDouble("latitude", latitude)
+            args.putInt("regionID", regionID)
             args.putString("path", path)
+
 
             fragment.arguments = args
             return fragment
