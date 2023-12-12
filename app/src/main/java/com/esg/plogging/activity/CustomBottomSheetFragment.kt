@@ -89,6 +89,7 @@ class CustomBottomSheetFragment : BottomSheetDialogFragment() {
 
                         override fun onNothingSelected(parentView: AdapterView<*>) {
                             // 아무것도 하지 않음
+
                         }
                     }
 
@@ -126,7 +127,7 @@ class CustomBottomSheetFragment : BottomSheetDialogFragment() {
             if (path != null && distance != null && loginData?.logUserID != null && encodedImage != null
                 && longitude != null && latitude != null && elapsedTime != null) {
                 var ploggingLogData = PloggingLogData(loginData?.logUserID, getCurrentDateTime(),
-                    locationName,distance, encodedImage!!,OneLineReview,elapsedTime,0,0)
+                    locationName,distance, encodedImage!!,OneLineReview,elapsedTime,0)
 
                 // 로그 기록
                 RecordApiManager.record(

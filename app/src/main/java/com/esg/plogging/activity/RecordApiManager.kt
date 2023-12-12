@@ -32,8 +32,7 @@ class RecordApiManager {
                             "&PloggingTime=${ploggingLogData.PloggingTime}"+
                             "&latitude=${latitude}"+
                             "&longitude=${longitude}"+
-                            "&RegionID=${RegionID}"+
-                            "&PloggingSticker=${ploggingLogData.PloggingSticker}"
+                            "&RegionID=${RegionID}"
 
                     val os: OutputStream = connection.outputStream
                     val writer = OutputStreamWriter(os)
@@ -71,7 +70,7 @@ class RecordApiManager {
                          callback: (Boolean) -> Unit) {
             Thread {
                 try {
-                    val serverAddress = "http://13.209.47.199/insertLog.php"
+                    val serverAddress = "http://13.209.47.199/insertData.php"
                     val url = URL(serverAddress)
 
                     val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
@@ -156,6 +155,7 @@ class RecordApiManager {
                     val jsonStr = buffer.toString()
                     val jsonObject = JSONObject(jsonStr)
 
+                    System.out.println("읽는 중. . . . ")
                     System.out.println(jsonStr)
 
                     val dataList: ArrayList<PloggingLogData> = ArrayList()
@@ -178,11 +178,11 @@ class RecordApiManager {
                         val OneLineReview = dataitem.getString("OneLineReview")
                         val PloggingTime = dataitem.getString("PloggingTime").toInt()
                         val trailID = dataitem.getString("Trail_ID").toInt()
-                        val PloggingSticker = dataitem.getString("PloggingSticker").toInt()
+                        //val PloggingSticker = dataitem.getString("PloggingSticker").toInt()
 
 
                         val ploggingLogData = PloggingLogData(UserID, PloggingDate,
-                            locationName, PloggingDistance, TrashStoragePhotos, OneLineReview,PloggingTime,trailID,PloggingSticker)
+                            locationName, PloggingDistance, TrashStoragePhotos, OneLineReview,PloggingTime,trailID)
                         dataList.add(ploggingLogData)
                     }
 
@@ -429,7 +429,7 @@ class RecordApiManager {
 
 
                             val ploggingLogData = PloggingLogData(UserID, PloggingDate,
-                                locationName, PloggingDistance, TrashStoragePhotos, OneLineReview,PloggingTime,trailID,PloggingSticker)
+                                locationName, PloggingDistance, TrashStoragePhotos, OneLineReview,PloggingTime,trailID)
                             dataList.add(ploggingLogData)
                             // dataList에는 변환된 TrashLocationData 객체들이 들어있음
                             callback(dataList)

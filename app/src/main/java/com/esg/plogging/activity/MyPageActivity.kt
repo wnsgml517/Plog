@@ -9,6 +9,7 @@ import android.util.Base64
 import android.view.Gravity
 import android.view.Gravity.*
 import android.view.LayoutInflater
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -126,15 +127,28 @@ class MyPageActivity : AppCompatActivity() {
             parentLayout.setBackgroundResource(R.drawable.rounded_user_plog_inform)
 
             // ImageView 설정
-            val imageView = ImageView(this)
-            val imageParams = LinearLayout.LayoutParams(
+            val cardView = androidx.cardview.widget.CardView(this)
+            val cardViewParams = LinearLayout.LayoutParams(
                 200,
                 200 // 또는 원하는 높이
             )
 
-            imageParams.setMargins(20 ,20,20,20)
+            // 둥글기를 30dp로 설정
+            val cornerRadius = resources.getDimensionPixelSize(R.dimen.customCornerRadius).toFloat()
+            cardView.radius = cornerRadius
+
+            cardViewParams.gravity = CENTER
+            cardViewParams.setMargins(20,20,20,20)
+            cardView.layoutParams = cardViewParams
+
+            // ImageView 설정
+            val imageView = ImageView(this)
+            val imageParams = LinearLayout.LayoutParams(
+                MATCH_PARENT,
+                MATCH_PARENT // 또는 원하는 높이
+            )
+
             imageParams.gravity = CENTER
-            imageView.setPadding(20,20,20,20)
             imageView.scaleType = ImageView.ScaleType.CENTER_CROP
             imageView.layoutParams = imageParams
             //imageView.layoutParams.gravity = android.view.Gravity.CENTER
@@ -142,10 +156,14 @@ class MyPageActivity : AppCompatActivity() {
             imageView.adjustViewBounds = false
             imageView.elevation = 8f // 8dp로 설정
 
+            System.out.println("마이페이지 사진..")
+            System.out.println(stamp.TrashStroagePhotos)
             //imageView.setImageBitmap(decodeBase64ToBitmap(stamp.TrashStroagePhotos)) // 이미지 리소스 설정
-            imageView.setImageBitmap(decodeBase64ToBitmap(stamp.TrashStroagePhotos)) // 이미지 리소스 설정
+            imageView.setImageResource(R.drawable.zzang) // 이미지 리소스 설정
 
-            parentLayout.addView(imageView)
+            cardView.addView(imageView)
+
+            parentLayout.addView(cardView)
 
 
             val informLayout = LinearLayout(this)

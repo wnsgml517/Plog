@@ -38,8 +38,6 @@ class RecordActivity : AppCompatActivity(),MapView.POIItemEventListener,
     var centerPoint : MapPoint? = null
     var encodedImage : String? = null
     var path: MutableList<MapPoint>? = null
-    var sticker : Int = 0
-
 
     // 경로를 그리기 위한 폴리라인 객체
     private val mapPolyline: MapPolyline = MapPolyline()
@@ -122,7 +120,6 @@ class RecordActivity : AppCompatActivity(),MapView.POIItemEventListener,
             val imageView = view as ImageView
             imageView.setColorFilter(Color.argb(150, 255, 255, 255)) // 선택한 이미지에 색상 필터 적용
             selectedView = imageView // 선택한 뷰 저장
-            sticker = position // 선택한 스탬프 저장
             Toast.makeText(this, "스탬프 index: $position 선택", Toast.LENGTH_SHORT).show()
         }
 
@@ -197,7 +194,7 @@ class RecordActivity : AppCompatActivity(),MapView.POIItemEventListener,
             // TODO: 감상평을 저장하거나 처리하는 로직 추가
             if (pathString != null && Userid != null &&encodedImage!=null) {
                 var ploggingLogData = PloggingLogData(Userid, getCurrentDateTime(),
-                    locationName,distance, encodedImage!!,OneLineReview,elapsedTime,0,sticker)
+                    locationName,distance, encodedImage!!,OneLineReview,elapsedTime,0)
                 System.out.println(pathString)
                 RecordApiManager.record(ploggingLogData, pathString,centerPoint?.mapPointGeoCoord!!.latitude, centerPoint?.mapPointGeoCoord!!.longitude, 34012) { success ->
                     if (success) {

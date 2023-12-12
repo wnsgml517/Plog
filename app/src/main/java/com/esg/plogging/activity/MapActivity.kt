@@ -317,11 +317,17 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
         binding.trashButton.setOnClickListener() {
 
             if (isTrashButtonClicked) {
-                // 버튼이 이미 클릭된 상태일 때
+                // 버튼이 이미 클릭된 상태일 때 (끄고 싶은 것)
+
+                // 트래킹 모드 다시 시작
+                mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
+
                 binding.trashButton.setBackgroundResource(R.drawable.circular_background)
                 isTrashButtonClicked = false
             } else {
-                // 버튼이 클릭되지 않은 상태일 때
+                // 버튼이 클릭되지 않은 상태일 때 (키고 싶은 것)
+                // 트래킹 모드 중지
+                stopTracking()
                 binding.trashButton.setBackgroundResource(R.drawable.circular_click_background)
 
 
@@ -382,7 +388,7 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
             }
             else
             {
-                removeAllPOIItemMarkers()
+                removeAllPOIItemMarkers() // 모든 마커 삭제
                 // 로그인 정보 있을 경우, 마이 페이지로 이동
                 val intent = Intent(this, MyPageActivity::class.java).apply {
                 }
@@ -413,6 +419,12 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
                 // 트래킹 모드 다시 시작
                 mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
 
+            }
+            else if(myApp.loginData==null){
+                // 로그인 해야 제보 가능
+                val intent = Intent(this, LoginActivity::class.java).apply {
+                }
+                startActivity(intent)
             }
             else{
                 // 제보하기 버튼 안 눌렀을 경우, 위치 제보 다이알로그 ... !!
@@ -499,7 +511,8 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
         System.out.println("돼??")
         mapView.addPOIItem(postMarker)
     }
-    fun getJusoFromGeoCord(mapPoint: MapPoint?) {
+    fun getJusoFromGeoCord(mapPoint: MapPoint?) : Int? {
+        var getregionID : Int? = 0
         mapPoint?.let {
             val currentMapPoint = MapPoint.mapPointWithGeoCoord(mapPoint.mapPointGeoCoord.latitude, mapPoint.mapPointGeoCoord.longitude) //현재위치
             MapReverseGeoCoder(	"50dcc7154fb1c7eb3860aa0b6c24cdc0", currentMapPoint, object : MapReverseGeoCoder.ReverseGeoCodingResultListener {
@@ -514,8 +527,9 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
                     RecordApiManager.regionRead("district", district, "Region") { success ->
                         if (success != null) {
                             // 성공적으로 데이터를 받아왔을 때의 처리
-                            postregionID = success
-                            recordregionID = success
+                            //postregionID = success
+                            //recordregionID = success
+                            getregionID = success
                             System.out.println(postregionID)
                             System.out.println("regionID!!!")
                         } else {
@@ -532,6 +546,7 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
                 }
             }, this).startFindingAddress()
         }
+        return getregionID
     }
     private fun getBitmapFromView(view: View): Bitmap {
         view.setLayoutParams(
@@ -686,7 +701,7 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
         }
 
         override fun onMapViewDragEnded(p0: MapView?, p1: MapPoint?) {
-           mapActivity.getJusoFromGeoCord(p1)// 중심 좌표 주소 가져오기
+           mapActivity.postregionID = mapActivity.getJusoFromGeoCord(p1)// 중심 좌표 주소 가져오기
         }
 
         override fun onMapViewMoveFinished(p0: MapView?, p1: MapPoint?) {
@@ -746,6 +761,10 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
         override fun onBottomSheetPostDismissed(data: Boolean) {
             System.out.println(data)
             System.out.println("제보 잘 했나.")
+
+            // 트래킹 모드 다시 시작
+            mapActivity.mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
+
             // 위치 제보 마커 없애기
             // 기존 중심 좌표 마커 삭제
             mapActivity.mapView.removePOIItem(mapActivity.postMarker)
@@ -873,8 +892,9 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
     }
     // 로그 버튼 받아오기 이슈..
     override fun onBottomSheetDismissed(data: Boolean) {
-        System.out.println("받아왓어,,,?ㅋㅋ")
+        System.out.println("기록하기 완!")
         System.out.println(data)
+
         if(data){
             //기존 페이지로 초기화.
             binding.startButton.visibility = View.VISIBLE
@@ -887,6 +907,10 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
             binding.nowView.visibility = View.GONE
             binding.timerTextView.visibility = View.GONE
             binding.distanceTextView.visibility = View.GONE
+
+            //경로랑 마커 삭제
+            removeAllPolylines()
+            removeAllPOIItemMarkers()
         }
     }
 
@@ -920,7 +944,13 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
                     "${mapPoint.mapPointGeoCoord.latitude},${mapPoint.mapPointGeoCoord.longitude}"
                 }
 
-                //getJusoFromGeoCord()
+                // 마지막 주소를 기준으로 보내기
+                val recordPosition = MapPoint.mapPointWithGeoCoord(Location("now").longitude,Location("now").latitude)
+
+                // regionID 가져오기
+                recordregionID = getJusoFromGeoCord(recordPosition)
+
+                // 기록 페이지 모달창 부르기
                 val bottomSheetFragment = recordregionID?.let {
                     CustomBottomSheetFragment.newInstance(pausedTime, distanceInMeters, pathString, Location("now").longitude,Location("now").latitude,
                         it, this
@@ -1025,7 +1055,7 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
             centerPoint = MapPoint.mapPointWithGeoCoord(newLocation.latitude,newLocation.longitude)
 
             distanceInMeters += newDistance
-            binding.distanceTextView.text = "${String.format("%.2f", distanceInMeters)}m"
+            binding.distanceTextView.text = "${String.format("%.1f", distanceInMeters.div(1000))}km"
         }
     }
 

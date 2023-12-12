@@ -134,6 +134,11 @@ class PlogActivity : AppCompatActivity() {
                                     System.out.println(it1)
                                     System.out.println("삭제하러가자ㅠ")
                                     if (success) {
+
+                                        //마커랑 폴리라인 삭제
+                                        mapView.removeAllPolylines()
+                                        mapView.removeAllPOIItems()
+
                                         // 삭제 성공 처리
                                         runOnUiThread {
                                             val intent = Intent(applicationContext, MyPageActivity::class.java)
@@ -152,6 +157,11 @@ class PlogActivity : AppCompatActivity() {
                         }
                     }
                     binding.previousButton.setOnClickListener(){
+
+                        //마커랑 폴리라인 삭제
+                        mapView.removeAllPolylines()
+                        mapView.removeAllPOIItems()
+
                         val intent = Intent(applicationContext, MyPageActivity::class.java)
                         startActivity(intent)
                     }

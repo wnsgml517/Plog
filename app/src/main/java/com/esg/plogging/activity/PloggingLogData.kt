@@ -11,6 +11,5 @@ data class PloggingLogData (
     val TrashStroagePhotos: String,
     val OneLineReview : String,
     val PloggingTime : Int,
-    val trailID : Int,
-    val PloggingSticker: Int
+    val trailID : Int
 ) : java.io.Serializable
