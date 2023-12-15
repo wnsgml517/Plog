@@ -46,6 +46,12 @@ class CustomBottomSheetFragment : BottomSheetDialogFragment() {
         val longitude = arguments?.getDouble("longitude")
         val regionID = arguments?.getInt("regionID")
 
+        System.out.println("위경도")
+        System.out.println(longitude)
+        System.out.println(latitude)
+        System.out.println(regionID)
+
+
         //로그인 정보
         val myApp = activity?.application as Plogger
         val loginData = myApp.loginData
@@ -133,9 +139,9 @@ class CustomBottomSheetFragment : BottomSheetDialogFragment() {
                 RecordApiManager.record(
                     ploggingLogData,
                     path,
-                    longitude,
                     latitude,
-                    34012
+                    longitude,
+                    regionID!!
                 ) { success ->
                     if (success) {
                         System.out.println("기록 성공")

@@ -59,27 +59,27 @@ class LoginActivity : AppCompatActivity() {
         var cancel = false
         var focusView: View? = null
 
-        // Password validation
-        if (password.isEmpty()) {
-            binding.idEditText.error = "비밀번호를 입력해주세요."
-            focusView = binding.idEditText
-            cancel = true
-        } else if (!isPasswordValid(password)) {
-            binding.pwEditText.error = "6자 이상의 비밀번호를 입력해주세요."
-            focusView = binding.pwEditText
-            cancel = true
-        }
-
-        // Email validation
-        if (email.isEmpty()) {
-            binding.idEditText.error = "이메일을 입력해주세요."
-            focusView = binding.idEditText
-            cancel = true
-        } else if (!isEmailValid(email)) {
-            binding.idEditText.error = "@를 포함한 유효한 이메일을 입력해주세요."
-            focusView = binding.idEditText
-            cancel = true
-        }
+//        // Password validation
+//        if (password.isEmpty()) {
+//            binding.idEditText.error = "비밀번호를 입력해주세요."
+//            focusView = binding.idEditText
+//            cancel = true
+//        } else if (!isPasswordValid(password)) {
+//            binding.pwEditText.error = "6자 이상의 비밀번호를 입력해주세요."
+//            focusView = binding.pwEditText
+//            cancel = true
+//        }
+//
+//        // Email validation
+//        if (email.isEmpty()) {
+//            binding.idEditText.error = "이메일을 입력해주세요."
+//            focusView = binding.idEditText
+//            cancel = true
+//        } else if (!isEmailValid(email)) {
+//            binding.idEditText.error = "@를 포함한 유효한 이메일을 입력해주세요."
+//            focusView = binding.idEditText
+//            cancel = true
+//        }
 
         if (cancel) {
             focusView?.requestFocus()

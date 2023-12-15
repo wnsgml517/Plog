@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- res/values/dimens.xml -->
 <resources>
-    <dimen name="customCornerRadius">20dp</dimen>
+    <dimen name="customCornerRadius">15dp</dimen>
 </resources>

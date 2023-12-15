@@ -2,6 +2,7 @@ package com.esg.plogging.activity
 
 import android.Manifest
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -14,16 +15,14 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Base64
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
@@ -40,7 +39,7 @@ import java.security.MessageDigest.getInstance
 import java.util.*
 
 
-class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetListener {
+class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetListener, CustomBottomSheetPostFragment.BottomSheetPostListener {
 
     lateinit var binding : ActivityMapBinding
     private lateinit var mapView : MapView
@@ -114,6 +113,10 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
 
         mapView = MapView(this)
 
+        // MapView의 초기 확대 수준을 조절합니다.
+        mapView.setZoomLevel(1, true) // 여기서 14는 초기 확대 수준입니다.
+
+
         removeAllPolylines() // 기존의 폴리라인 삭제
         removeAllPOIItemMarkers() // 마커 지우고 시작
 
@@ -123,8 +126,8 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
 
 
         //트래킹 모드 설정
-        mapView.currentLocationTrackingMode =
-        MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
+        //mapView.currentLocationTrackingMode =
+        //MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
 
 
         mapView.setPOIItemEventListener(eventListener)  // 마커 클릭 이벤트 리스너 등록
@@ -139,10 +142,11 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
         if(loginData!=null){ //로그인이 되어있는 경우. 정보 표!시!
             // 플로깅 위치를 불러와야 함.
             // 추천 플로깅 정보 읽어오기(csv 파일 미완료)
-            System.out.println(loginData?.logUserID)
+            System.out.println("첫 시작")
+
 
             //전체 PloggingLog 불러오기
-            RecordApiManager.read("UserID",loginData?.logUserID, "PloggingLog") { success ->
+            RecordApiManager.myPageread("UserID",loginData?.logUserID, "PloggingLog") { success ->
                 if (success!=null) {
                     PlogList = success
                 }
@@ -154,12 +158,26 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
                 RecordApiManager.privateTrailRead("UserID",loginData?.logUserID, "PrivateTrail") { success ->
                     if (success!=null) {
                         // 기록 불러오기 성공 처리
-                        dataList = success
+
+                        synchronized(PlogList) {
+                            dataList = success
+                        }
 
                         runOnUiThread {
-                            for ((index,stamp) in dataList.withIndex()) {
+                            for (stamp in dataList) {
                                 // 조건을 만족하는 LogList 필터링
-                                val filteredLogs = PlogList.filter { it.locationName == stamp.locationName }
+
+                                val filteredLogs = mutableListOf<PloggingLogData>()
+
+                                synchronized(PlogList) {
+                                    for (plog in PlogList) {
+                                        // 조건을 만족하는 LogList 필터링
+                                        if (plog.locationName == stamp.locationName) {
+                                            // 작업 수행
+                                            filteredLogs.add(plog)
+                                        }
+                                    }
+                                }
                                 val customMarkerView = LayoutInflater.from(this).inflate(R.layout.plog_layout, null)
 
                                 val imageView = customMarkerView.findViewById<ImageView>(R.id.plogImageView)
@@ -172,6 +190,7 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
                                 if (filteredLogs.isNotEmpty()) {
                                     val bitmap = decodeBase64ToBitmap(filteredLogs[0].TrashStroagePhotos)
 
+                                    System.out.println(bitmap)
 //                                    val imageParams = LinearLayout.LayoutParams(
 //                                        MATCH_PARENT,
 //                                        MATCH_PARENT // 또는 원하는 높이
@@ -198,6 +217,7 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
                                     itemName = "${stamp.locationName} $visitNum ${String.format("%.1f", totalDistance.div(1000))}"
                                     mapPoint = MapPoint.mapPointWithGeoCoord(stamp.latitude, stamp.longitude)
                                     markerType = MapPOIItem.MarkerType.CustomImage // 마커타입을 커스텀 마커로 지정.
+                                    System.out.println(customMarkerView)
                                     if(customMarkerBitmap==null)
                                     {
                                         customImageResourceId = R.drawable.plog_logo
@@ -411,8 +431,12 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
 
             if (isPostButtonClicked) {
                 // 버튼이 이미 클릭된 상태에서 클릭했을 때.(제보하기 종료)
+
                 // 기존 중심 좌표 마커 삭제
                 mapView.removePOIItem(postMarker)
+
+                // 위치 제보 뷰 없애기
+                binding.postView.visibility = View.GONE
                 // 배경 원래대로 바꾸기
                 binding.postButton.setBackgroundResource(R.drawable.circular_background)
                 isPostButtonClicked = false
@@ -427,47 +451,84 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
                 startActivity(intent)
             }
             else{
-                // 제보하기 버튼 안 눌렀을 경우, 위치 제보 다이알로그 ... !!
-                val builder = AlertDialog.Builder(this)
-                builder.setTitle("위치 제보")
-                    .setMessage("쓰레기통 혹은 화장실 위치를 제보하시겠습니까?")
-                    .setPositiveButton("네") { dialog, _ ->
 
-                        // 트래킹 모드 중지
-                        stopTracking()
+                // 제보하기 버튼 안 눌렀는데 눌렀음, 위치 제보 다이알로그 ...
+                val dialog = Dialog(this, R.style.CustomDialogTheme)
+                dialog.setContentView(R.layout.custom_dialog_layout)
 
-                        // 플로깅 기록 중인 경우
-                        if(isRecording){
-                            //일시 정지
-                            isRecording = false
-                            timerHandler.removeCallbacks(timerRunnable)
-                            dialog.dismiss()
+                // 다이얼로그의 제목을 가운데로 정렬하고 글꼴 변경
+                val titleTextView = dialog.findViewById<TextView>(R.id.dialog_title)
+                titleTextView.text = "위치 제보"
+                titleTextView.gravity = Gravity.CENTER
 
-                            // 모양 변경
-                            binding.playButton.setImageResource(R.drawable.play_solid)
-                        }
+                // 다이얼로그의 제목을 가운데로 정렬하고 글꼴 변경
+                val infromTextView = dialog.findViewById<TextView>(R.id.dialog_inform)
+                infromTextView.text = "쓰레기통 혹은 화장실 위치를\n제보하시겠습니까?"
+                infromTextView.gravity = Gravity.CENTER
 
-                        // 버튼이 클릭되지 않은 상태일 때(제보하기 시작)
+                // 취소 및 완료 버튼을 가운데로 정렬하고 녹색으로 변경
+                val cancelButton = dialog.findViewById<Button>(R.id.cancel_button)
+                val completeButton = dialog.findViewById<Button>(R.id.complete_button)
 
-                        // 현재 지도 중심 좌표 알아내기
-                        postPoint = mapView.getMapCenterPoint()
+                cancelButton.setOnClickListener {
+                    dialog.dismiss()
+                }
 
-                        // 마커 추가
-                        createpostMarker(postPoint!!, mapView)
+                completeButton.setOnClickListener {
+                    // 트래킹 모드 중지
+                    stopTracking()
 
-                        //배경색 연두색으로 바꾸기
-                        binding.postButton.setBackgroundResource(R.drawable.circular_click_background)
-                        isPostButtonClicked = true
-
-
-                    }
-                    .setNegativeButton("아니오") { dialog, _ ->
+                    // 플로깅 기록 중인 경우
+                    if (isRecording) {
+                        //일시 정지
+                        isRecording = false
+                        timerHandler.removeCallbacks(timerRunnable)
                         dialog.dismiss()
-                    }
-                    .setCancelable(false)
 
-                val dialog = builder.create()
+                        // 모양 변경
+                        binding.playButton.setImageResource(R.drawable.play_solid)
+                    }
+
+                    // 버튼이 클릭되지 않은 상태일 때(제보하기 시작)
+
+                    // 현재 지도 중심 좌표 알아내기
+                    postPoint = mapView.getMapCenterPoint()
+
+                    // 마커 추가
+                    createpostMarker(postPoint!!, mapView)
+
+                    //배경색 연두색으로 바꾸기
+                    binding.postButton.setBackgroundResource(R.drawable.circular_click_background)
+                    isPostButtonClicked = true
+
+                    // 위치 제보 뷰 보여지기
+                    binding.postView.visibility = View.VISIBLE
+
+                    // 위치 제보 뷰 이 위치로 하기 버 눌렀을 경우. 다이얼로그 보여지기
+                    binding.postSaveLayout.setOnClickListener(){
+
+                        val bottomSheetPostFragment = CustomBottomSheetPostFragment.newInstance(
+                            postMarker!!.mapPoint.mapPointGeoCoord.longitude,
+                            postMarker!!.mapPoint.mapPointGeoCoord.latitude,
+                            postregionID!!,
+                            this
+                        )
+                        System.out.println("태그태그")
+                        System.out.println(postregionID)
+
+                        bottomSheetPostFragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.AppBottomSheetDialogTheme)
+                        bottomSheetPostFragment.show(supportFragmentManager, bottomSheetPostFragment.tag)
+
+                    }
+                    //다이알로그 닫기
+                    dialog.dismiss()
+                }
+
+                dialog.setCancelable(false)
                 dialog.show()
+
+
+
             }
         }
 
@@ -487,6 +548,25 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
 
         // 카카오 key 값 얻기
         //getKakaoMapHashKey(this)
+    }
+    override fun onBottomSheetPostDismissed(data: Boolean) {
+        System.out.println(data)
+        System.out.println("제보 잘 했나.")
+
+        // 위치 제보 뷰 없애기
+        binding.postView.visibility = View.GONE
+
+        // 트래킹 모드 다시 시작
+        mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
+
+        // 위치 제보 마커 없애기
+        // 기존 중심 좌표 마커 삭제
+        mapView.removePOIItem(postMarker)
+
+        // 색깔 흰색으로 바꾸기 : 초기화
+        binding.postButton.setBackgroundResource(R.drawable.circular_background)
+        isPostButtonClicked = false
+
     }
     fun createpostMarker(postPoint : MapPoint, mapView : MapView)
     {
@@ -511,43 +591,48 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
         System.out.println("돼??")
         mapView.addPOIItem(postMarker)
     }
-    fun getJusoFromGeoCord(mapPoint: MapPoint?) : Int? {
-        var getregionID : Int? = 0
+    fun getJusoFromGeoCord(mapPoint: MapPoint?, callback: (Int?) -> Unit) {
+        var getregionID: Int? = null
         mapPoint?.let {
-            val currentMapPoint = MapPoint.mapPointWithGeoCoord(mapPoint.mapPointGeoCoord.latitude, mapPoint.mapPointGeoCoord.longitude) //현재위치
-            MapReverseGeoCoder(	"50dcc7154fb1c7eb3860aa0b6c24cdc0", currentMapPoint, object : MapReverseGeoCoder.ReverseGeoCodingResultListener {
+            val currentMapPoint = MapPoint.mapPointWithGeoCoord(mapPoint.mapPointGeoCoord.latitude, mapPoint.mapPointGeoCoord.longitude)
+
+            MapReverseGeoCoder("50dcc7154fb1c7eb3860aa0b6c24cdc0", currentMapPoint, object : MapReverseGeoCoder.ReverseGeoCodingResultListener {
                 override fun onReverseGeoCoderFoundAddress(p0: MapReverseGeoCoder?, address: String) {
-                    //주소받아 오기 성공 - address: 현재 주소
                     postAddress = address
-                    val regionAddress: ArrayList<String> = postAddress!!.split(" ") as ArrayList<String>
-                    val district = regionAddress[0] + " " + regionAddress[1] + " " + regionAddress[2]
-                    System.out.println(district)
+                    val regionAddress: List<String> = postAddress?.split(" ") ?: emptyList()
 
-                    // 주소 기반 regionID 구하기
-                    RecordApiManager.regionRead("district", district, "Region") { success ->
-                        if (success != null) {
-                            // 성공적으로 데이터를 받아왔을 때의 처리
-                            //postregionID = success
-                            //recordregionID = success
-                            getregionID = success
-                            System.out.println(postregionID)
-                            System.out.println("regionID!!!")
-                        } else {
-                            // 통신 실패 또는 데이터 오류 처리
-                            System.out.println("regionID..")
+                    if (regionAddress.size >= 3) {
+                        val district = regionAddress[0] + " " + regionAddress[1] + " " + regionAddress[2]
+
+                        RecordApiManager.regionRead("district", district, "Region") { success ->
+                            if (success != null) {
+                                postregionID = success
+                                getregionID = success
+                                System.out.println(getregionID)
+                                System.out.println("regionID!!!")
+                            } else {
+                                System.out.println("regionID..")
+                            }
+
+                            // 비동기 작업이 완료되면 콜백 호출
+                            callback(getregionID)
                         }
+                    } else {
+                        System.out.println("잘못된 주소 형식")
+                        // 비동기 작업이 실패한 경우에도 콜백 호출
+                        callback(null)
                     }
-
                 }
 
                 override fun onReverseGeoCoderFailedToFindAddress(p0: MapReverseGeoCoder?) {
-                    //주소 받아오기 실패
                     System.out.println("주소를 찾을 수 없습니다.")
+                    // 비동기 작업이 실패한 경우에도 콜백 호출
+                    callback(null)
                 }
             }, this).startFindingAddress()
         }
-        return getregionID
     }
+
     private fun getBitmapFromView(view: View): Bitmap {
         view.setLayoutParams(
             LinearLayout.LayoutParams(
@@ -587,8 +672,8 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
 
             mapPolyline.addPoint(mapPoint)
             // 폴리라인 스타일 설정
-            mapPolyline.lineColor = Color.argb(128, 0, 255, 0) // 적절한 색상 및 투명도 지정
-            // mapPolyline.= 5 // 폴리라인 두께 설정
+            mapPolyline.lineColor = Color.argb(128, 0, 128, 0) // 적절한 색상 및 투명도 지정
+            //mapPolyline.line= 5 // 폴리라인 두께 설정
 
             // 지도에 폴리라인 추가
             mapView.addPolyline(mapPolyline)
@@ -701,9 +786,20 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
         }
 
         override fun onMapViewDragEnded(p0: MapView?, p1: MapPoint?) {
-           mapActivity.postregionID = mapActivity.getJusoFromGeoCord(p1)// 중심 좌표 주소 가져오기
-        }
+            // 중심 좌표 주소 가져오기
+            mapActivity.getJusoFromGeoCord(p1) { postregionID ->
+                // 비동기 작업이 완료된 후에 실행되는 코드 블록
 
+                System.out.println(postregionID)
+                System.out.println("드래그...")
+                mapActivity.binding.postAddressTextView.text = mapActivity.postAddress
+
+                // 여기에서 postregionID를 활용하여 다른 작업을 수행할 수 있음
+                // 예: postregionID를 이용하여 모달창을 띄우거나 다른 작업 수행
+                // 예를 들면, mapActivity.postregionID = postregionID 와 같은 작업 수행 가능
+                mapActivity.postregionID = postregionID
+            }
+        }
         override fun onMapViewMoveFinished(p0: MapView?, p1: MapPoint?) {
         }
 
@@ -762,6 +858,9 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
             System.out.println(data)
             System.out.println("제보 잘 했나.")
 
+            // 위치 제보 뷰 없애기
+            mapActivity.binding.postView.visibility = View.GONE
+
             // 트래킹 모드 다시 시작
             mapActivity.mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
 
@@ -814,7 +913,7 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
 
         override fun getPressedCalloutBalloon(poiItem: MapPOIItem?): View {
 
-          if(poiItem!=null){
+          /*if(poiItem!=null){
               val bottomSheetPostFragment = CustomBottomSheetPostFragment.newInstance(
                   poiItem.mapPoint.mapPointGeoCoord.longitude,
                   poiItem.mapPoint.mapPointGeoCoord.latitude,
@@ -828,7 +927,8 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
               activity?.let {
                   bottomSheetPostFragment.show(it, bottomSheetPostFragment.tag)
               }
-          }
+          }*/
+
             // 말풍선 클릭 시
             name.text = "제보하기"
             return mCalloutBalloon
@@ -859,22 +959,35 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
     }
 
     private fun showPauseDialog() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("일시정지")
-            .setMessage("플로깅을 잠시 멈출까요?")
-            .setPositiveButton("일시정지") { dialog, _ ->
-                isRecording = false
-                timerHandler.removeCallbacks(timerRunnable)
-                dialog.dismiss()
-                // 모양 변경
-                binding.playButton.setImageResource(R.drawable.play_solid)
-            }
-            .setNegativeButton("취소") { dialog, _ ->
-                dialog.dismiss()
-            }
-            .setCancelable(false)
+        val dialog = Dialog(this, R.style.CustomDialogTheme)
+        dialog.setContentView(R.layout.custom_dialog_layout)
 
-        val dialog = builder.create()
+        // 다이얼로그의 제목을 가운데로 정렬하고 글꼴 변경
+        val titleTextView = dialog.findViewById<TextView>(R.id.dialog_title)
+        titleTextView.text = "일시정지"
+        titleTextView.gravity = Gravity.CENTER
+
+        // 다이얼로그의 제목을 가운데로 정렬하고 글꼴 변경
+        val infromTextView = dialog.findViewById<TextView>(R.id.dialog_inform)
+        infromTextView.text = "플로깅을 잠시 멈출까요?"
+        infromTextView.gravity = Gravity.CENTER
+
+        // 취소 및 완료 버튼을 가운데로 정렬하고 녹색으로 변경
+        val cancelButton = dialog.findViewById<Button>(R.id.cancel_button)
+        val completeButton = dialog.findViewById<Button>(R.id.complete_button)
+
+        cancelButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        completeButton.setOnClickListener {
+            isRecording = false
+            timerHandler.removeCallbacks(timerRunnable)
+            dialog.dismiss()
+            // 모양 변경
+            binding.playButton.setImageResource(R.drawable.play_solid)
+        }
+        dialog.setCancelable(false)
         dialog.show()
     }
 
@@ -915,77 +1028,90 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
     }
 
     private fun showStopDialog() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("플로깅 종료 팝업")
-            .setMessage("플로깅을 완료할까요?")
-            .setPositiveButton("완료") { dialog, _ ->
+        val dialog = Dialog(this, R.style.CustomDialogTheme)
+        dialog.setContentView(R.layout.custom_dialog_layout)
 
-                isRecording = false
+        // 다이얼로그의 제목을 가운데로 정렬하고 글꼴 변경
+        val titleTextView = dialog.findViewById<TextView>(R.id.dialog_title)
+        titleTextView.text = "플로깅 완료"
+        titleTextView.gravity = Gravity.CENTER
 
-                timerHandler.removeCallbacks(timerRunnable)
+        // 다이얼로그의 제목을 가운데로 정렬하고 글꼴 변경
+        val infromTextView = dialog.findViewById<TextView>(R.id.dialog_inform)
+        infromTextView.text = "기록하러 가볼까요?"
+        infromTextView.gravity = Gravity.CENTER
 
-                //stop 시.
-                endTime = System.currentTimeMillis()
-                System.out.println("종료시간 : " + endTime.toString())
-                dialog.dismiss()
+        // 취소 및 완료 버튼을 가운데로 정렬하고 녹색으로 변경
+        val cancelButton = dialog.findViewById<Button>(R.id.cancel_button)
+        val completeButton = dialog.findViewById<Button>(R.id.complete_button)
+
+        cancelButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        completeButton.setOnClickListener {
+            isRecording = false
+
+            timerHandler.removeCallbacks(timerRunnable)
+
+            //stop 시.
+            endTime = System.currentTimeMillis()
+            System.out.println("종료시간 : " + endTime.toString())
+            dialog.dismiss()
 
 
 
 
-                // 기록 모달창 슬라이딩 윈도우
+            // 기록 모달창 슬라이딩 윈도우
 
-                /*val bottomSheetView = layoutInflater.inflate(R.layout.activity_save, null)
-                val bottomSheetDialog = BottomSheetDialog(this)
-                bottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                bottomSheetDialog.setContentView(bottomSheetView)
+            /*val bottomSheetView = layoutInflater.inflate(R.layout.activity_save, null)
+            val bottomSheetDialog = BottomSheetDialog(this)
+            bottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            bottomSheetDialog.setContentView(bottomSheetView)
 
-                bottomSheetDialog.show()*/
-                val pathString = path.joinToString(";") { mapPoint ->
-                    "${mapPoint.mapPointGeoCoord.latitude},${mapPoint.mapPointGeoCoord.longitude}"
-                }
+            bottomSheetDialog.show()*/
+            val pathString = path.joinToString(";") { mapPoint ->
+                "${mapPoint.mapPointGeoCoord.latitude},${mapPoint.mapPointGeoCoord.longitude}"
+            }
 
-                // 마지막 주소를 기준으로 보내기
-                val recordPosition = MapPoint.mapPointWithGeoCoord(Location("now").longitude,Location("now").latitude)
+            // 마지막 주소를 기준으로 보내기
+            val recordPosition = MapPoint.mapPointWithGeoCoord(path[path.size-1].mapPointGeoCoord.latitude,path[path.size-1].mapPointGeoCoord.longitude)
 
-                // regionID 가져오기
-                recordregionID = getJusoFromGeoCord(recordPosition)
+            // regionID 가져오기
+            getJusoFromGeoCord(recordPosition) { recordregionID ->
+                System.out.println("마지막 주소 값")
+                System.out.println(recordregionID)
 
                 // 기록 페이지 모달창 부르기
                 val bottomSheetFragment = recordregionID?.let {
-                    CustomBottomSheetFragment.newInstance(pausedTime, distanceInMeters, pathString, Location("now").longitude,Location("now").latitude,
+                    CustomBottomSheetFragment.newInstance(pausedTime, distanceInMeters, pathString, path[path.size-1].mapPointGeoCoord.longitude, path[path.size-1].mapPointGeoCoord.latitude,
                         it, this
                     )
                 }
                 bottomSheetFragment?.setStyle(DialogFragment.STYLE_NORMAL, R.style.AppBottomSheetDialogTheme)
                 bottomSheetFragment?.show(supportFragmentManager, bottomSheetFragment.tag)
+            }
 
 
 
+            // 기록 페이지로 이동
+            // 기록 정보를 Intent에 담아서 RecordActivity로 이동
+            /*val intent = Intent(this, RecordActivity::class.java).apply {
+                putExtra("userName", "도비")
+                putExtra("elapsedTime", pausedTime)
+                putExtra("distance", distanceInMeters)
 
-                // 기록 페이지로 이동
-                // 기록 정보를 Intent에 담아서 RecordActivity로 이동
-                /*val intent = Intent(this, RecordActivity::class.java).apply {
-                    putExtra("userName", "도비")
-                    putExtra("elapsedTime", pausedTime)
-                    putExtra("distance", distanceInMeters)
-
-                    val pathString = path.joinToString(";") { mapPoint ->
-                        "${mapPoint.mapPointGeoCoord.latitude},${mapPoint.mapPointGeoCoord.longitude}"
-                    }
-                    putExtra("path", pathString)
-                    locationManager.removeUpdates(locationListener)
+                val pathString = path.joinToString(";") { mapPoint ->
+                    "${mapPoint.mapPointGeoCoord.latitude},${mapPoint.mapPointGeoCoord.longitude}"
                 }
-                pausedTime = 0 // 0으로 초기화
-                mapViewContainer?.removeAllViews();
-                startActivity(intent)*/
-
+                putExtra("path", pathString)
+                locationManager.removeUpdates(locationListener)
             }
-            .setNegativeButton("취소") { dialog, _ ->
-                dialog.dismiss()
-            }
-            .setCancelable(false)
-
-        val dialog = builder.create()
+            pausedTime = 0 // 0으로 초기화
+            mapViewContainer?.removeAllViews();
+            startActivity(intent)*/
+        }
+        dialog.setCancelable(false)
         dialog.show()
     }
 

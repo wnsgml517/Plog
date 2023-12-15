@@ -15,6 +15,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.marginEnd
 import com.esg.plogging.R
 import com.esg.plogging.databinding.ActivityMypageBinding
 
@@ -45,7 +46,7 @@ class MyPageActivity : AppCompatActivity() {
             updateTimer(loginData.totalTime as Int)
 
             //스탬프 정보(로그 정보) 읽어오기
-            RecordApiManager.read("UserID",loginData?.logUserID, "PloggingLog") { success ->
+            RecordApiManager.myPageread("UserID",loginData?.logUserID, "PloggingLog") { success ->
                 if (success!=null) {
                     // 기록 불러오기 성공 처리
                     dataList = success
@@ -141,6 +142,10 @@ class MyPageActivity : AppCompatActivity() {
             cardViewParams.setMargins(20,20,20,20)
             cardView.layoutParams = cardViewParams
 
+            // 그림자 효과를 0dp로 설정
+            cardView.cardElevation = 0f
+
+
             // ImageView 설정
             val imageView = ImageView(this)
             val imageParams = LinearLayout.LayoutParams(
@@ -158,8 +163,8 @@ class MyPageActivity : AppCompatActivity() {
 
             System.out.println("마이페이지 사진..")
             System.out.println(stamp.TrashStroagePhotos)
-            //imageView.setImageBitmap(decodeBase64ToBitmap(stamp.TrashStroagePhotos)) // 이미지 리소스 설정
-            imageView.setImageResource(R.drawable.zzang) // 이미지 리소스 설정
+            imageView.setImageBitmap(decodeBase64ToBitmap(stamp.TrashStroagePhotos)) // 이미지 리소스 설정
+            //imageView.setImageResource(R.drawable.zzang) // 이미지 리소스 설정
 
             cardView.addView(imageView)
 
@@ -200,6 +205,15 @@ class MyPageActivity : AppCompatActivity() {
             locationNameTextView.setTypeface(null, android.graphics.Typeface.BOLD)
 
 
+            // 한줄평 textview 설정
+            val oneLineTextView = TextView(this)
+            val oneLinetextParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            oneLineTextView.layoutParams = oneLinetextParams
+            oneLineTextView.setText(stamp.OneLineReview)
+
 
             // 플로깅 날짜 TextView 설정
             val locationDateTextView = TextView(this)
@@ -207,7 +221,10 @@ class MyPageActivity : AppCompatActivity() {
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
+            locationDatetextParams.gravity = RIGHT
+            locationDatetextParams.setMargins(10,10,10,10)
             locationDateTextView.layoutParams = locationDatetextParams
+            locationDateTextView.textSize = 15f
 
             // 폰트 설정
             locationDateTextView.typeface = resources.getFont(R.font.noto_extrabold)
@@ -218,10 +235,11 @@ class MyPageActivity : AppCompatActivity() {
             // 텍스트 색상 설정
             locationDateTextView.setTextColor(Color.parseColor("#E2AAA9A9"))
 
-            locationDateTextView.textSize = 16f // 16sp로 설정
+            locationDateTextView.textSize = 14f // 16sp로 설정
             locationDateTextView.setTypeface(null, android.graphics.Typeface.BOLD)
 
             informLayout.addView(locationNameTextView)
+            informLayout.addView(oneLineTextView)
             informLayout.addView(locationDateTextView)
 
             parentLayout.addView(informLayout)

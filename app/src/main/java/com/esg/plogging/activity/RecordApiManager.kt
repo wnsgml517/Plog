@@ -80,6 +80,13 @@ class RecordApiManager {
                     connection.useCaches = false
 
 
+                    System.out.println(userid)
+                    System.out.println(RegionID)
+                    System.out.println(locationname)
+                    System.out.println(latitude)
+                    System.out.println(longitude)
+                    System.out.println(separator)
+
                     val data = "UserID=${userid}"+
                             "&RegionID=${RegionID}"+
                             "&locationName=${locationname}"+
@@ -157,6 +164,92 @@ class RecordApiManager {
 
                     System.out.println("읽는 중. . . . ")
                     System.out.println(jsonStr)
+
+                    val dataList: ArrayList<PloggingLogData> = ArrayList()
+
+                    val keys = jsonObject.keys()
+
+                    keys.next()
+
+                    while (keys.hasNext()) {
+                        val key = keys.next() as String
+                        val data = jsonObject.getString(key)
+                        val dataitem = JSONObject(data)
+
+                        // 이제 dataObject에서 필요한 데이터를 추출하고 TrashLocationData 객체를 생성하여 dataList에 추가
+                        val UserID = dataitem.getString("UserID")
+                        val PloggingDate = dataitem.getString("PloggingDate")
+                        val locationName = dataitem.getString("locationName")
+                        val PloggingDistance = dataitem.getString("PloggingDistance").toDouble()
+                        val TrashStoragePhotos = dataitem.getString("TrashStoragePhotos")
+                        val OneLineReview = dataitem.getString("OneLineReview")
+                        val PloggingTime = dataitem.getString("PloggingTime").toInt()
+                        val trailID = dataitem.getString("Trail_ID").toInt()
+                        //val PloggingSticker = dataitem.getString("PloggingSticker").toInt()
+
+
+                        val ploggingLogData = PloggingLogData(UserID, PloggingDate,
+                            locationName, PloggingDistance, TrashStoragePhotos, OneLineReview,PloggingTime,trailID)
+                        dataList.add(ploggingLogData)
+                    }
+
+
+                    // dataList에는 변환된 TrashLocationData 객체들이 들어있음
+                    callback(dataList)
+
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    callback(null)
+                }
+            }.start()
+        }
+        fun myPageread(key : String, value : String?, Table : String, callback: ( ArrayList<PloggingLogData>?) -> Unit){
+            Thread {
+                try {
+                    System.out.println("마이페이지 ")
+                    System.out.println(value)
+
+                    val serverAddress = "http://13.209.47.199/myPage.php";
+                    val url = URL(serverAddress)
+
+                    val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+                    connection.requestMethod = "POST"
+                    connection.doInput = true
+                    connection.doOutput = true
+                    connection.useCaches = false
+
+
+                    val data = "UserID="+value;
+
+                    //4. 데이터를 아웃풋 스트림을 이용해서 직접 내보내기
+                    val os: OutputStream = connection.getOutputStream()
+                    val writer = OutputStreamWriter(os) //
+                    writer.write(data, 0, data.length) //1024를 넘지 않는 사이즈로 만드는 게 좋다
+                    writer.flush()
+                    writer.close()
+
+                    //5. 서버(postText.php)에서 에코한 응답문자열 읽어오기
+                    val `is`: InputStream = connection.getInputStream()
+                    val isr = InputStreamReader(`is`)
+                    val reader = BufferedReader(isr)
+                    val buffer = StringBuffer()
+                    while (true) {
+                        val line: String = reader.readLine() ?: break
+                        buffer.append(
+                            """
+                        $line
+                        
+                        """.trimIndent()
+                        )
+                    }
+
+                    val jsonStr = buffer.toString()
+
+                    val jsonObject = JSONObject(jsonStr)
+
+                    System.out.println("읽는 중. . . . ")
+
 
                     val dataList: ArrayList<PloggingLogData> = ArrayList()
 
@@ -306,7 +399,12 @@ class RecordApiManager {
                     val key = keys.next() as String
                     val route = jsonObject.getString(key)
                     val dataitem = JSONObject(route)
+
                     val regionID  = dataitem.getString("Region_Code").toInt()
+                    val regionintID  = dataitem.getInt("Region_Code")
+
+                    System.out.println(regionID)
+                    System.out.println(regionintID)
 
 
                     // dataList에는 변환된 TrashLocationData 객체들이 들어있음

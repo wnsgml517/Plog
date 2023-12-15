@@ -55,7 +55,7 @@ class PlogActivity : AppCompatActivity() {
         val index: Int = intent.getIntExtra("index", -1)
         // 클릭한 플로깅 로그 객체 들고오기
         //스탬프 정보(로그 정보) 읽어오기
-        RecordApiManager.read("UserID",loginData?.logUserID, "PloggingLog") { success ->
+        RecordApiManager.myPageread("UserID",loginData?.logUserID, "PloggingLog") { success ->
             if (success!=null) {
                 // 기록 불러오기 성공 처리
                 dataList = success
@@ -121,7 +121,7 @@ class PlogActivity : AppCompatActivity() {
                         //한줄평 설정
                         binding.plogOneReview.setText(selectedStamp?.OneLineReview)
                         //거리 설정
-                        binding.distanceTextView.setText(String.format("%.1f", selectedStamp?.PloggingDistance?.div(1000))+"km")
+                        binding.distanceTextView.setText(String.format("%.1f", selectedStamp?.PloggingDistance)+"km")
                         //소요 시간 설정
                         binding.elapsedTimeTextView.setText(formatElapsedTime(selectedStamp?.PloggingTime))
                     }
