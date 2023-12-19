@@ -39,7 +39,7 @@ class EditApiManager {
 
                     System.out.println("회원정보수정"+buffer.toString())
                     // 서버 응답 확인
-                    val success = buffer.toString().contains("Success")
+                    val success = buffer.toString().contains("insertImage")
 
                     callback(success)
 

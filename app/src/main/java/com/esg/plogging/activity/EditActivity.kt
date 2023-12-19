@@ -31,10 +31,7 @@ class EditActivity : AppCompatActivity() {
 
         encodedImage = loginData!!.profilePhoto
 
-        // 초기값 셋팅
-        val Nickname = intent.getStringExtra("NickName")
-        val Bio = intent.getStringExtra("Bio")
-        val Photo = intent.getStringExtra("Photo")
+
 
         binding.NicknameEditText.setText(loginData!!.nickname)
         binding.bioEditText.setText(loginData!!.bio)
@@ -130,10 +127,13 @@ class EditActivity : AppCompatActivity() {
                 // 가입 성공 처리
                 runOnUiThread {
                     val intent = Intent(this, MyPageActivity::class.java).apply{
+                        System.out.println(nickname)
+                        System.out.println(bio)
+                        System.out.println(profile)
                         // 선택된 스탬프 객체를 인텐트에 추가
-                        myApp!!.loginData!!.nickname=nickname
-                        myApp!!.loginData!!.bio=bio
-                        myApp!!.loginData!!.profilePhoto=profile
+                        (application as Plogger)!!.loginData!!.nickname=nickname
+                        (application as Plogger)!!.loginData!!.bio=bio
+                        (application as Plogger)!!.loginData!!.profilePhoto=profile
                     }
                     startActivity(intent)
 

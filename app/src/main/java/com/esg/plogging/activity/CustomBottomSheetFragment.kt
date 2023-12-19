@@ -130,8 +130,6 @@ class CustomBottomSheetFragment : BottomSheetDialogFragment() {
             val TrashStroagePhotos = encodedImage
             val locationName = binding.editTextLocation.text.toString()
 
-            // 저장이 성공했을 때 메인 액티비티로 값을 전달
-            bottomSheetListener?.onBottomSheetDismissed(true)
 
 
 
@@ -151,12 +149,19 @@ class CustomBottomSheetFragment : BottomSheetDialogFragment() {
                 ) { success ->
                     if (success) {
                         System.out.println("기록 성공")
+
+                        // 저장이 성공했을 때 메인 액티비티로 값을 전달
+                        bottomSheetListener?.onBottomSheetDismissed(true)
+
                         // 가입 성공 처리
                         activity?.runOnUiThread {
 
                                                     }
                     } else {
                         System.out.println("기록 실패")
+                        // 저장이 성공했을 때 메인 액티비티로 값을 전달
+                        bottomSheetListener?.onBottomSheetDismissed(false)
+
                         // 가입 실패 처리
                         activity?.runOnUiThread {
                             System.out.println("기록 실패")

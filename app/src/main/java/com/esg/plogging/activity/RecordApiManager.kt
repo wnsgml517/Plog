@@ -48,10 +48,14 @@ class RecordApiManager {
                         val line: String = reader.readLine() ?: break
                         buffer.append("$line\n")
                     }
-                    System.out.println(buffer.toString())
                     System.out.println("플로깅정보기록~~")
+
+                    val jsonObject = JSONObject(buffer.toString())
+
+
                     // 서버 응답 확인
-                    val success = buffer.toString().contains("Success")
+                    val success = buffer.toString().contains("userid")
+
                     callback(success)
 
                 } catch (e: Exception) {

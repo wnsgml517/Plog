@@ -101,8 +101,15 @@ class LoginActivity : AppCompatActivity() {
                 val intent = Intent(applicationContext, MapActivity::class.java)
                 startActivity(intent)
             } else {
-                // 통신 실패 또는 데이터 오류 처리
-                System.out.println("통신 실패")
+                runOnUiThread {
+                    var focusView: View? = null
+                    binding.pwEditText.error = "비밀번호가 일치하지 않습니다. 다시 로그인 해주세요"
+                    focusView = binding.pwEditText
+                    focusView?.requestFocus()
+
+                    // 통신 실패 또는 데이터 오류 처리
+                    System.out.println("통신 실패")
+                }
             }
         }
     }

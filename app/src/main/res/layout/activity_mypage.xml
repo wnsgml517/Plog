@@ -21,9 +21,9 @@
         <!-- 첫 번째 이미지 버튼 (왼쪽에 위치) -->
         <ImageView
             android:id="@+id/previousButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_margin="70dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="100dp"
             android:padding="8dp"
             android:rotation="180"
             android:scaleType="centerCrop"
@@ -41,9 +41,9 @@
         <!-- 두 번째 이미지 버튼 (오른쪽에 위치) -->
         <ImageView
             android:id="@+id/nextButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_margin="70dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="100dp"
             android:padding="7dp"
             android:scaleType="centerCrop"
             android:src="@drawable/right_from_bracket_solid" />

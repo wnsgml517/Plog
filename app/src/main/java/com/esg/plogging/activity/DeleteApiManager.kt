@@ -8,7 +8,7 @@ import java.net.URL
 // JoinApiManager.kt
 class DeleteApiManager {
     companion object {
-        fun delete(table: String, key: String, value: Int ,userID : String, callback: (Boolean) -> Unit) {
+        fun delete(table: String, key: String, value: Int ,userID : String, callback: (DeleteResponse?) -> Unit) {
             Thread {
                 try {
                     System.out.println("삭제...........")
@@ -47,12 +47,17 @@ class DeleteApiManager {
                     val jsonObject = JSONObject(jsonStr)
 
                     // 서버 응답 확인
-                    val success = jsonObject.getString("message").contains("delete Successfully")
-                    callback(success)
+                    val TotalLog = jsonObject.getString("TotalLog")
+                    val TotalDistance = jsonObject.getString("TotalDistance").toDouble()
+                    val TotalTime = jsonObject.getString("TotalTime").toInt()
+
+                    val serverResponse = DeleteResponse(TotalLog, TotalDistance, TotalTime)
+
+                    callback(serverResponse)
 
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    callback(false)
+                    callback(null)
                 }
             }.start()
         }

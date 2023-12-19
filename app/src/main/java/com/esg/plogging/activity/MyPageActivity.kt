@@ -30,18 +30,25 @@ class MyPageActivity : AppCompatActivity() {
         val myApp = application as Plogger
         var loginData = myApp.loginData
         var dataList: ArrayList<PloggingLogData> = ArrayList()
-        var totalDistance = loginData?.totalDistance?.div(1000)
+        var totalDistance = loginData?.totalDistance
 
         binding = ActivityMypageBinding.inflate(layoutInflater)
 
         if (loginData != null) {
             // 개인정보 셋팅
+            // 닉네임
             binding.usernameTextView.setText(loginData.nickname)
-            binding.distanceTextView.setText(String.format("%.1f km", totalDistance))
 
+            // 프로필 사진
             if(!loginData.profilePhoto.equals(" "))
                 binding.userImageView.setImageBitmap(decodeBase64ToBitmap(loginData.profilePhoto))
 
+
+            // 총 거리
+            binding.distanceTextView.setText(String.format("%.1f km", totalDistance))
+
+
+            // 총 시간
             //binding.elapsedTimeTextView.setText(loginData.totalTime.toString())
             updateTimer(loginData.totalTime as Int)
 

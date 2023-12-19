@@ -93,7 +93,7 @@ class CustomBottomSheetPostFragment : BottomSheetDialogFragment() {
 
                 RecordApiManager.locationPost(
                     loginData.logUserID,
-                    regionID,
+                    34012,
                     binding.editTextLocation.text.toString(),
                     longitude,
                     latitude,

@@ -133,15 +133,22 @@ class PlogActivity : AppCompatActivity() {
                                     System.out.println(trailID)
                                     System.out.println(it1)
                                     System.out.println("삭제하러가자ㅠ")
-                                    if (success) {
-
-                                        //마커랑 폴리라인 삭제
-                                        mapView.removeAllPolylines()
-                                        mapView.removeAllPOIItems()
-
+                                    if (success!=null) {
                                         // 삭제 성공 처리
                                         runOnUiThread {
-                                            val intent = Intent(applicationContext, MyPageActivity::class.java)
+                                            //마커랑 폴리라인 삭제
+                                            mapView.removeAllPolylines()
+                                            mapView.removeAllPOIItems()
+
+                                            val intent = Intent(applicationContext, MyPageActivity::class.java).apply{
+                                                // 선택된 스탬프 객체를 인텐트에 추가
+                                                //putExtra("selectedStamp", selectedStamp)
+                                                putExtra("totalLog",success.totalLog)
+                                                putExtra("totalDistance",success.totalDistance)
+                                                putExtra("totalTime",success.totalTime)
+
+
+                                            }
                                             startActivity(intent)
                                             Toast.makeText(this, "삭제 성공", Toast.LENGTH_SHORT).show()
                                             // 원하는 다음 화면으로 이동하거나 추가적인 작업 수행
@@ -228,7 +235,7 @@ class PlogActivity : AppCompatActivity() {
         }
 
         // 폴리라인 스타일 설정
-        mapPolyline.lineColor = Color.argb(128, 0, 255, 0) // 적절한 색상 및 투명도 지정
+        mapPolyline.lineColor = Color.argb(128, 0, 128, 0) // 적절한 색상 및 투명도 지정
 
 
         // 지도에 폴리라인 추가
@@ -259,20 +266,28 @@ class PlogActivity : AppCompatActivity() {
         System.out.println(startPoint)
         System.out.println(endPoint)
 
-        // 중간 지점 계산
-        startPoint?.let { sp ->
-            endPoint?.let { ep ->
-                val midPoint = MapPoint.mapPointWithGeoCoord(
-                    (sp.mapPointGeoCoord.latitude + ep.mapPointGeoCoord.latitude) / 2,
-                    (sp.mapPointGeoCoord.longitude + ep.mapPointGeoCoord.longitude) / 2
-                )
-                mapView.setZoomLevel(1,true)
+        // 모든 위도와 경도를 저장할 리스트 생성
+        val latitudes = mutableListOf<Double>()
+        val longitudes = mutableListOf<Double>()
 
-                // 지도에 폴리라인 및 중간 지점 표시
-                mapView.addPolyline(mapPolyline)
-                mapView.setMapCenterPoint(midPoint, true)
-            }
+        // path의 모든 좌표의 위도와 경도를 리스트에 추가
+        path?.forEach { mapPoint ->
+            latitudes.add(mapPoint.mapPointGeoCoord.latitude)
+            longitudes.add(mapPoint.mapPointGeoCoord.longitude)
         }
+
+        // 최소 및 최대 위도와 경도 계산
+        val minLat = latitudes.minOrNull() ?: 0.0
+        val maxLat = latitudes.maxOrNull() ?: 0.0
+        val minLng = longitudes.minOrNull() ?: 0.0
+        val maxLng = longitudes.maxOrNull() ?: 0.0
+
+        // 중간 지점 계산
+        val midPoint = MapPoint.mapPointWithGeoCoord(
+            (minLat + maxLat) / 2,
+            (minLng + maxLng) / 2
+        )
+        mapView.setMapCenterPoint(midPoint, true)
     }
     private fun formatElapsedTime(elapsedTime: Int?): String {
         val seconds = (elapsedTime?.div(1000))?.toInt()
