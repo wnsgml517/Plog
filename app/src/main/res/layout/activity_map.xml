@@ -316,9 +316,10 @@
 
     <LinearLayout
         android:id="@+id/post_layout"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
         android:padding="5dp"
         android:visibility="visible">
 
@@ -334,6 +335,21 @@
             android:padding="8dp"
             android:scaleType="fitCenter"
             android:src="@drawable/locationpost" />
+
+        <ImageButton
+            android:id="@+id/reset_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="210dp"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/circular_background"
+            android:elevation="5dp"
+            android:maxWidth="50dp"
+            android:maxHeight="50dp"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/shoe_prints_solid" />
     </LinearLayout>
+
 
 </RelativeLayout>

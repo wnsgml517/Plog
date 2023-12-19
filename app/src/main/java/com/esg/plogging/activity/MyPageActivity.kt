@@ -70,6 +70,10 @@ class MyPageActivity : AppCompatActivity() {
             }
 
         }
+        binding.settingsButton.setOnClickListener(){
+            val intent = Intent(applicationContext, EditActivity::class.java)
+            startActivity(intent)
+        }
         binding.previousButton.setOnClickListener(){
             // 현재 Activity에서 다른 Activity로 전환
             val intent = Intent(applicationContext, MapActivity::class.java)

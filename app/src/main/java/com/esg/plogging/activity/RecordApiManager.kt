@@ -455,6 +455,8 @@ class RecordApiManager {
                     }
 
                     val jsonStr = buffer.toString()
+                    System.out.println(jsonStr)
+                    System.out.println("파싱이니?")
                     val jsonObject = JSONObject(jsonStr)
                     callback(jsonObject)
                 } catch (e: Exception) {
@@ -484,14 +486,17 @@ class RecordApiManager {
                            val latitude = dataitem.getString("latitude").toDouble()
                            val longitude = dataitem.getString("longitude").toDouble()
                            val UserID = dataitem.getString("UserID")
+                           val trashlocationData = dataitem.getString("RecentPhoto")
+                           val visitNum = dataitem.getString("TotalLog").toInt()
+                           val totalDistance = dataitem.getString("TotalDistance").toDouble()
 
                            val privateTrailData = PrivateTrailData(locationName, RegionID,
-                               latitude, longitude, UserID)
+                               latitude, longitude, UserID,trashlocationData, totalDistance, visitNum)
                            dataList.add(privateTrailData)
                            // dataList에는 변환된 TrashLocationData 객체들이 들어있음
-                           callback(dataList)
-                       }
 
+                       }
+                       callback(dataList)
                    }
 
                 } catch (e: Exception) {

@@ -3,43 +3,50 @@ package com.esg.plogging.activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Paint.Join
 import android.os.Bundle
+import android.provider.ContactsContract.CommonDataKinds.Nickname
 import android.provider.MediaStore
 import android.util.Base64
-import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
-import com.esg.plogging.databinding.ActivityJoinBinding
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.esg.plogging.databinding.ActivityEditBinding
 import java.io.*
-import java.net.HttpURLConnection
-import java.net.MalformedURLException
-import java.net.URL
 
 
 @Suppress("DEPRECATION")
-class JoinActivity : AppCompatActivity() {
-    lateinit var binding : ActivityJoinBinding
+class EditActivity : AppCompatActivity() {
+    lateinit var binding : ActivityEditBinding
     var bitmap : Bitmap? = null // 이미지 비트맵 값.
     var encodedImage : String? = null // 이미지 String 값
-
+    var myApp : Plogger? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityJoinBinding.inflate(layoutInflater)
+        binding = ActivityEditBinding.inflate(layoutInflater)
 
-        binding.goJoinButton.setOnClickListener {
-            attemptJoin()
+        myApp = application as Plogger
+        val loginData = myApp!!.loginData
+
+        encodedImage = loginData!!.profilePhoto
+
+        // 초기값 셋팅
+        val Nickname = intent.getStringExtra("NickName")
+        val Bio = intent.getStringExtra("Bio")
+        val Photo = intent.getStringExtra("Photo")
+
+        binding.NicknameEditText.setText(loginData!!.nickname)
+        binding.bioEditText.setText(loginData!!.bio)
+        binding.userImageView.setImageBitmap(decodeBase64ToBitmap(loginData!!.profilePhoto))
+
+        binding.goEditButton.setOnClickListener {
+            attemptEdit()
+
         }
 
         // 갤러리에서 이미지 선택
-        binding.photoImageView.setOnClickListener {
+        binding.userImageView.setOnClickListener {
             // 갤러리에서 이미지 선택을 위한 Intent
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             startActivityForResult(intent, JoinActivity.PICK_IMAGE_REQUEST)
@@ -50,12 +57,12 @@ class JoinActivity : AppCompatActivity() {
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == JoinActivity.PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
+        if (requestCode == EditActivity.PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
             // 선택한 이미지의 URI를 가져와서 ImageView에 설정
             val selectedImageUri = data.data
             val inputStream = contentResolver.openInputStream(selectedImageUri!!)
             bitmap = BitmapFactory.decodeStream(inputStream)
-            binding.photoImageView.setImageBitmap(bitmap)
+            binding.userImageView.setImageBitmap(bitmap)
             //bitmap = resize(bitmap!!)
             encodedImage = bitmapToByteArray(bitmap!!)
 
@@ -79,9 +86,9 @@ class JoinActivity : AppCompatActivity() {
         val byteArray = baos.toByteArray()
         return Base64.encodeToString(byteArray, Base64.DEFAULT)
     }
-    private fun attemptJoin() {
+    private fun attemptEdit() {
         val Nickname = binding.NicknameEditText!!.text.toString()
-        val UserID = binding.idEditText!!.text.toString()
+        val Bio = binding.bioEditText!!.text.toString()
         val Passwd = binding.pwEditText!!.text.toString()
         var cancel = false
         var focusView: View? = null
@@ -98,16 +105,11 @@ class JoinActivity : AppCompatActivity() {
         }
 
         // 이메일의 유효성 검사
-        if (UserID.isEmpty()) {
-            binding.idEditText!!.error = "이메일을 입력해주세요."
-            focusView = binding.idEditText
-            cancel = true
-        } else if (!isEmailValid(UserID)) {
-            binding.idEditText!!.error = "@를 포함한 유효한 이메일을 입력해주세요."
-            focusView = binding.idEditText
+        if (Bio.isEmpty()) {
+            binding.bioEditText!!.error = "바이오를 입력해주세요"
+            focusView = binding.bioEditText
             cancel = true
         }
-
         // 이름의 유효성 검사
         if (Nickname.isEmpty()) {
             binding.NicknameEditText!!.error = "닉네임을 입력해주세요."
@@ -117,39 +119,56 @@ class JoinActivity : AppCompatActivity() {
         if (cancel) {
             focusView?.requestFocus()
         } else {
-            encodedImage?.let { JoinStart(Nickname, UserID, Passwd, it) }
+            System.out.println("정보수정...?")
+            encodedImage?.let { EditStart(myApp!!.loginData!!.logUserID!!, Nickname, Bio, Passwd, it) }
             //startJoin(JoinData(name, email, password))
         }
     }
-    private fun JoinStart(nickname: String, userID: String, passwd: String, profile : String) {
-        JoinApiManager.join(nickname, userID, passwd, profile) { success ->
+    private fun EditStart(userID : String, nickname: String, bio: String, password: String, profile : String) {
+        EditApiManager.edit(userID, nickname, bio, password, profile) { success ->
             if (success) {
                 // 가입 성공 처리
                 runOnUiThread {
-                    Toast.makeText(this, "가입 성공", Toast.LENGTH_SHORT).show()
-                    finish() // 화면 닫기
+                    val intent = Intent(this, MyPageActivity::class.java).apply{
+                        // 선택된 스탬프 객체를 인텐트에 추가
+                        myApp!!.loginData!!.nickname=nickname
+                        myApp!!.loginData!!.bio=bio
+                        myApp!!.loginData!!.profilePhoto=profile
+                    }
+                    startActivity(intent)
+
+                    Toast.makeText(this, "회원정보 수정 성공", Toast.LENGTH_SHORT).show()
+                    //finish() // 화면 닫기
                     // 원하는 다음 화면으로 이동하거나 추가적인 작업 수행
                 }
             } else {
                 // 가입 실패 처리
                 runOnUiThread {
                     finish() // 화면 닫기
-                    Toast.makeText(this, "가입 실패", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "회원정보 수정 실패", Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
 
     companion object {
-        const val PICK_IMAGE_REQUEST = 1
+        private const val PICK_IMAGE_REQUEST = 1
     }
 
-    private fun isEmailValid(email: String): Boolean {
-        return email.contains("@")
-    }
 
     private fun isPasswordValid(password: String): Boolean {
         return password.length >= 6
+    }
+    fun decodeBase64ToBitmap(base64String: String): Bitmap? {
+        try {
+            // 문자 바꾸기(POST 방식으로 값 읽고 쓰면서 값이 바뀌어서 저장됨)
+            val cleanBase64 = base64String.replace("\\", "")
+            val decodedBytes = Base64.decode(cleanBase64, Base64.DEFAULT)
+            return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
     }
 
 }

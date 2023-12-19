@@ -48,7 +48,7 @@
                 android:background="@android:color/transparent"
                 android:fontFamily="@font/noto_extrabold"
                 android:gravity="center"
-                android:text="취소"
+                android:text="NO"
                 android:textColor="@color/plog_color"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -61,7 +61,7 @@
                 android:background="@android:color/transparent"
                 android:fontFamily="@font/noto_extrabold"
                 android:gravity="center"
-                android:text="완료"
+                android:text="YES"
                 android:textColor="@color/plog_color"
                 android:textSize="16sp"
                 android:textStyle="bold" />

@@ -6,4 +6,7 @@ data class PrivateTrailData(
     val latitude: Double,
     val longitude: Double,
     val UserID: String,
+    val TrashStroagePhotos : String,
+    val totalDistance : Double,
+    val totalVisit : Int
 )

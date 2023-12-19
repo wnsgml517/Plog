@@ -1,5 +1,7 @@
 package com.esg.plogging.activity
 
+import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -30,6 +32,7 @@ class CustomBottomSheetFragment : BottomSheetDialogFragment() {
     private lateinit var mbinding: ActivityMapBinding
     var encodedImage : String? = null
     var bitmap : Bitmap? = null // 이미지 비트맵 값.
+    private val REQUEST_IMAGE_CAPTURE = 2
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,7 +68,7 @@ class CustomBottomSheetFragment : BottomSheetDialogFragment() {
         var predefinedLocations: ArrayList<String> = arrayListOf()
 
         // 저장되어 있는 플로깅 정보 기록 이름 들고오기
-        RecordApiManager.read("UserID", loginData?.logUserID, "PloggingLog") { success ->
+        RecordApiManager.privateTrailRead("UserID", loginData?.logUserID, "PrivateTrail") { success ->
             if (success!=null) {
                 // 불러오기 성공
                 activity?.runOnUiThread {
@@ -113,9 +116,12 @@ class CustomBottomSheetFragment : BottomSheetDialogFragment() {
         // 갤러리에서 이미지 선택
         binding.photoImageView.setOnClickListener {
             // 갤러리에서 이미지 선택을 위한 Intent
-            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
 
-            startActivityForResult(intent, CustomBottomSheetFragment.PICK_IMAGE_REQUEST)
+            showOptionDialog()
+
+            //val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+
+            //startActivityForResult(intent, CustomBottomSheetFragment.PICK_IMAGE_REQUEST)
         }
 
         binding.saveButton.setOnClickListener() {
@@ -186,24 +192,30 @@ class CustomBottomSheetFragment : BottomSheetDialogFragment() {
     //사용자 비트맵을 string으로 변환하는 함수
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == AppCompatActivity.RESULT_OK && data != null) {    // 선택한 이미지의 URI를 가져와서 ImageView에 설정
-            val selectedImageUri = data.data
-            val inputStream =  requireActivity().contentResolver.openInputStream(selectedImageUri!!)
-            bitmap = BitmapFactory.decodeStream(inputStream)
-            //bitmap = resize(bitmap!!)
-            encodedImage = bitmapToByteArray(bitmap!!)
-
-
-            // 이미지를 Base64로 인코딩하여 저장된 문자열을 디코딩하여 비트맵으로 변환
-            val decodedImageBytes = Base64.decode(encodedImage, Base64.DEFAULT)
-            val decodedBitmap = BitmapFactory.decodeByteArray(decodedImageBytes, 0, decodedImageBytes.size)
-
-
-            System.out.println("이미지 선택할 때")
-            System.out.println(encodedImage)
-            binding.photoImageView.setImageBitmap(decodedBitmap)
-
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                PICK_IMAGE_REQUEST -> handleGalleryResult(data)
+                REQUEST_IMAGE_CAPTURE -> handleCameraResult(data)
+            }
         }
+//        if (requestCode == PICK_IMAGE_REQUEST && resultCode == AppCompatActivity.RESULT_OK && data != null) {    // 선택한 이미지의 URI를 가져와서 ImageView에 설정
+//            val selectedImageUri = data.data
+//            val inputStream =  requireActivity().contentResolver.openInputStream(selectedImageUri!!)
+//            bitmap = BitmapFactory.decodeStream(inputStream)
+//            //bitmap = resize(bitmap!!)
+//            encodedImage = bitmapToByteArray(bitmap!!)
+//
+//
+//            // 이미지를 Base64로 인코딩하여 저장된 문자열을 디코딩하여 비트맵으로 변환
+//            val decodedImageBytes = Base64.decode(encodedImage, Base64.DEFAULT)
+//            val decodedBitmap = BitmapFactory.decodeByteArray(decodedImageBytes, 0, decodedImageBytes.size)
+//
+//
+//            System.out.println("이미지 선택할 때")
+//            System.out.println(encodedImage)
+//            binding.photoImageView.setImageBitmap(decodedBitmap)
+//
+//        }
     }
     // 기존의 Bitmap을 String 문자열(DB 저장용) 으로 바꿔주는...!
     fun bitmapToByteArray(bitmap: Bitmap): String? {
@@ -211,6 +223,65 @@ class CustomBottomSheetFragment : BottomSheetDialogFragment() {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos)
         val byteArray = baos.toByteArray()
         return Base64.encodeToString(byteArray, Base64.DEFAULT)
+    }
+    private fun showOptionDialog() {
+        val options = arrayOf("갤러리에서 선택", "카메라로 촬영")
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("이미지 선택 옵션")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> openGallery()
+                    1 -> openCamera()
+                }
+            }
+            .show()
+    }
+
+    private fun openGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(intent, PICK_IMAGE_REQUEST)
+    }
+
+    private fun openCamera() {
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (takePictureIntent.resolveActivity(requireContext().packageManager) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+        }
+    }
+
+    private fun handleGalleryResult(data: Intent?) {
+        val selectedImageUri = data?.data
+        val inputStream =  requireActivity().contentResolver.openInputStream(selectedImageUri!!)
+        bitmap = BitmapFactory.decodeStream(inputStream)
+        //bitmap = resize(bitmap!!)
+        encodedImage = bitmapToByteArray(bitmap!!)
+
+
+        // 이미지를 Base64로 인코딩하여 저장된 문자열을 디코딩하여 비트맵으로 변환
+        val decodedImageBytes = Base64.decode(encodedImage, Base64.DEFAULT)
+        val decodedBitmap = BitmapFactory.decodeByteArray(decodedImageBytes, 0, decodedImageBytes.size)
+
+
+        System.out.println("이미지 선택할 때")
+        System.out.println(encodedImage)
+        binding.photoImageView.setImageBitmap(decodedBitmap)
+    }
+
+    private fun handleCameraResult(data: Intent?) {
+        val imageBitmap = data?.extras?.get("data") as Bitmap
+        //bitmap = resize(bitmap!!)
+        encodedImage = bitmapToByteArray(imageBitmap!!)
+
+
+        // 이미지를 Base64로 인코딩하여 저장된 문자열을 디코딩하여 비트맵으로 변환
+        val decodedImageBytes = Base64.decode(encodedImage, Base64.DEFAULT)
+        val decodedBitmap = BitmapFactory.decodeByteArray(decodedImageBytes, 0, decodedImageBytes.size)
+
+
+        System.out.println("이미지 선택할 때")
+        System.out.println(encodedImage)
+        binding.photoImageView.setImageBitmap(decodedBitmap)
     }
 
     companion object {

@@ -6,10 +6,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Color
+import android.graphics.*
 import android.location.*
 import android.os.Bundle
 import android.os.Handler
@@ -126,8 +123,8 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
 
 
         //트래킹 모드 설정
-        //mapView.currentLocationTrackingMode =
-        //MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
+        mapView.currentLocationTrackingMode =
+            MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
 
 
         mapView.setPOIItemEventListener(eventListener)  // 마커 클릭 이벤트 리스너 등록
@@ -144,104 +141,64 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
             // 추천 플로깅 정보 읽어오기(csv 파일 미완료)
             System.out.println("첫 시작")
 
+            // 개인 플로그 정보(Private Trail) 읽어오기
+            RecordApiManager.privateTrailRead("UserID", loginData?.logUserID, "PrivateTrail") { success ->
 
-            //전체 PloggingLog 불러오기
-            RecordApiManager.myPageread("UserID",loginData?.logUserID, "PloggingLog") { success ->
-                if (success!=null) {
-                    PlogList = success
-                }
-                else {
-                    System.out.println("플로깅!!로그1!!!")
+                if (success != null) {
+                    System.out.println(success)
+                    dataList = success
+                    System.out.println("길이??")
+                    System.out.println(dataList.size)
 
-                }
-                //개인 플로그 정보(Private Trail) 읽어오기
-                RecordApiManager.privateTrailRead("UserID",loginData?.logUserID, "PrivateTrail") { success ->
-                    if (success!=null) {
-                        // 기록 불러오기 성공 처리
-
-                        synchronized(PlogList) {
-                            dataList = success
-                        }
-
+                    // 기록 불러오기 성공 처리
+                    for ((index, stamp) in dataList.withIndex()) {
+                        // 조건을 만족하는 LogList 필터링
                         runOnUiThread {
-                            for (stamp in dataList) {
-                                // 조건을 만족하는 LogList 필터링
+                            val customMarkerView = LayoutInflater.from(this).inflate(R.layout.plog_layout, null)
 
-                                val filteredLogs = mutableListOf<PloggingLogData>()
+                            val imageView = customMarkerView.findViewById<ImageView>(R.id.plogImageView)
+                            var customMarkerBitmap: Bitmap? = null
 
-                                synchronized(PlogList) {
-                                    for (plog in PlogList) {
-                                        // 조건을 만족하는 LogList 필터링
-                                        if (plog.locationName == stamp.locationName) {
-                                            // 작업 수행
-                                            filteredLogs.add(plog)
-                                        }
-                                    }
-                                }
-                                val customMarkerView = LayoutInflater.from(this).inflate(R.layout.plog_layout, null)
+                            if (stamp != null) {
+                                var bitmap = decodeBase64ToBitmap(stamp.TrashStroagePhotos)
+                                bitmap = getRoundedCornerBitmap(bitmap!!, 15)
 
-                                val imageView = customMarkerView.findViewById<ImageView>(R.id.plogImageView)
-
-
-                                var visitNum = 0
-                                var totalDistance = 0.00
-                                var customMarkerBitmap : Bitmap? = null
-
-                                if (filteredLogs.isNotEmpty()) {
-                                    val bitmap = decodeBase64ToBitmap(filteredLogs[0].TrashStroagePhotos)
-
-                                    System.out.println(bitmap)
-//                                    val imageParams = LinearLayout.LayoutParams(
-//                                        MATCH_PARENT,
-//                                        MATCH_PARENT // 또는 원하는 높이
-//                                    )
-
-                                    //imageView.layoutParams = imageParams
-
-                                    imageView.setImageBitmap(bitmap) // ImageView에 비트맵 설정
-
-                                    imageView.scaleType=ImageView.ScaleType.CENTER_CROP
-
-                                    // PloggingDistance의 합 계산(누적 km 확인)
-                                    totalDistance = filteredLogs.sumOf { it.PloggingDistance }
-                                    //몇 번 방문했는지 확인
-                                    visitNum = filteredLogs.size
-
-                                    customMarkerBitmap = getBitmapFromView(customMarkerView) // 레이아웃을 비트맵으로 변환
-
-                                }
-
-                                // 각 마커 설정
-                                val marker = MapPOIItem()
-                                marker.apply {
-                                    itemName = "${stamp.locationName} $visitNum ${String.format("%.1f", totalDistance.div(1000))}"
-                                    mapPoint = MapPoint.mapPointWithGeoCoord(stamp.latitude, stamp.longitude)
-                                    markerType = MapPOIItem.MarkerType.CustomImage // 마커타입을 커스텀 마커로 지정.
-                                    System.out.println(customMarkerView)
-                                    if(customMarkerBitmap==null)
-                                    {
-                                        customImageResourceId = R.drawable.plog_logo
-                                    }
-                                    else {
-                                        customImageBitmap = customMarkerBitmap // 레이아웃 비트맵을 마커 이미지로 설정
-                                    }
-                                    isCustomImageAutoscale = false
-                                    setCustomImageAnchor(0.5f,1.0f)
-                                }
-                                mapView.addPOIItem(marker)
+                                System.out.println(bitmap)
+                                imageView.setImageBitmap(bitmap) // ImageView에 비트맵 설정
+                                imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+                                customMarkerBitmap = getBitmapFromView(customMarkerView) // 레이아웃을 비트맵으로 변환
                             }
-                            Toast.makeText(this, "기록 불러오기 성공", Toast.LENGTH_SHORT).show()
-                            // 원하는 다음 화면으로 이동하거나 추가적인 작업 수행
-                        }
-                    } else {
-                        // 기록 불러오기 실패 처리
-                        runOnUiThread {
-                            Toast.makeText(this, "기록 없음", Toast.LENGTH_SHORT).show()
+
+                            // 각 마커 설정
+                            val marker = MapPOIItem()
+                            marker.apply {
+                                itemName = "${stamp.locationName} ${stamp.totalVisit} ${String.format("%.1f", stamp.totalDistance)}"
+                                mapPoint = MapPoint.mapPointWithGeoCoord(stamp.latitude, stamp.longitude)
+                                markerType = MapPOIItem.MarkerType.CustomImage // 마커타입을 커스텀 마커로 지정.
+                                System.out.println(customMarkerView)
+
+                                if (customMarkerBitmap == null) {
+                                    customImageResourceId = R.drawable.plog_logo
+                                } else {
+                                    customImageBitmap = customMarkerBitmap // 레이아웃 비트맵을 마커 이미지로 설정
+                                }
+                                isCustomImageAutoscale = false
+                                setCustomImageAnchor(0.5f, 1.0f)
+                            }
+                            System.out.println("마커야!!!!!!")
+                            System.out.println(marker.itemName)
+                            mapView.addPOIItem(marker)
+
+                            // 모든 데이터가 로드되고 마지막 stamp를 처리한 경우
+                            if (index == dataList.size - 1) {
+                                // 추가 작업을 여기에 추가...
+                                Toast.makeText(this, "데이터가 성공적으로 로드되었습니다", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
                 }
-
             }
+
         }
         System.out.println(mapView.currentLocationTrackingMode)
         System.out.println("트래킹모드^^...")
@@ -311,8 +268,8 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
                 // 진행 상태 이모지로 변경
                 binding.playButton.setImageResource(R.drawable.pause_solid)
             } else {
-                    // Pause recording and show dialog
-                    showPauseDialog()
+                // Pause recording and show dialog
+                showPauseDialog()
             }
 
         }
@@ -633,6 +590,27 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
         }
     }
 
+    fun getRoundedCornerBitmap(bitmap: Bitmap, pixels: Int): Bitmap {
+        val output = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(output)
+
+        val color = 0xff424242.toInt()
+        val paint = Paint()
+        val rect = Rect(0, 0, bitmap.width, bitmap.height)
+        val rectF = RectF(rect)
+        val roundPx = pixels.toFloat()
+
+        paint.isAntiAlias = true
+        canvas.drawARGB(0, 0, 0, 0)
+        paint.color = color
+        canvas.drawRoundRect(rectF, roundPx, roundPx, paint)
+
+        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
+        canvas.drawBitmap(bitmap, rect, rect, paint)
+
+        return output
+    }
+
     private fun getBitmapFromView(view: View): Bitmap {
         view.setLayoutParams(
             LinearLayout.LayoutParams(
@@ -764,7 +742,7 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
         }
 
         override fun onMapViewZoomLevelChanged(p0: MapView?, p1: Int) {
-             if (mapActivity.isTrashButtonClicked) {
+            if (mapActivity.isTrashButtonClicked) {
                 mapActivity.addMarkers(mapActivity.trashLocationData)
                 System.out.println("지도 줌 레벨 변경")
             }
@@ -804,7 +782,7 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
         }
 
     }
-        // 마커 클릭 이벤트 리스너
+    // 마커 클릭 이벤트 리스너
     class MarkerEventListener(val context: Context): MapView.POIItemEventListener {
         override fun onPOIItemSelected(mapView: MapView?, poiItem: MapPOIItem?) {
             // 마커 클릭 시
@@ -913,51 +891,27 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
 
         override fun getPressedCalloutBalloon(poiItem: MapPOIItem?): View {
 
-          /*if(poiItem!=null){
-              val bottomSheetPostFragment = CustomBottomSheetPostFragment.newInstance(
-                  poiItem.mapPoint.mapPointGeoCoord.longitude,
-                  poiItem.mapPoint.mapPointGeoCoord.latitude,
-                  poiItem.tag,
-                  this
-              )
+            /*if(poiItem!=null){
+                val bottomSheetPostFragment = CustomBottomSheetPostFragment.newInstance(
+                    poiItem.mapPoint.mapPointGeoCoord.longitude,
+                    poiItem.mapPoint.mapPointGeoCoord.latitude,
+                    poiItem.tag,
+                    this
+                )
 
-              bottomSheetPostFragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.AppBottomSheetDialogTheme)
+                bottomSheetPostFragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.AppBottomSheetDialogTheme)
 
-              // 여기서 activity를 사용하여 FragmentManager를 얻어옵니다.
-              activity?.let {
-                  bottomSheetPostFragment.show(it, bottomSheetPostFragment.tag)
-              }
-          }*/
+                // 여기서 activity를 사용하여 FragmentManager를 얻어옵니다.
+                activity?.let {
+                    bottomSheetPostFragment.show(it, bottomSheetPostFragment.tag)
+                }
+            }*/
 
             // 말풍선 클릭 시
             name.text = "제보하기"
             return mCalloutBalloon
         }
     }
-    private fun getAddressFromLocation(latitude: Double, longitude: Double, context: Context) {
-        val geocoder = Geocoder(context, Locale.getDefault())
-
-        try {
-            val addresses: List<Address> = geocoder.getFromLocation(latitude, longitude, 1) as List<Address>
-
-            if (addresses.isNotEmpty()) {
-                val address: Address = addresses[0]
-                val city = address.locality // 도시
-                val subLocality = address.subLocality ?: address.subAdminArea // 구
-
-                System.out.println(subLocality)
-                System.out.println(city)
-                System.out.println("지오코딩!!!!")
-                Log.d("Location", "City: $city, SubLocality: $subLocality")
-            } else {
-                Log.d("Location", "No address found")
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-            Log.e("Location", "Error getting address")
-        }
-    }
-
     private fun showPauseDialog() {
         val dialog = Dialog(this, R.style.CustomDialogTheme)
         dialog.setContentView(R.layout.custom_dialog_layout)
@@ -989,19 +943,6 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
         }
         dialog.setCancelable(false)
         dialog.show()
-    }
-
-    private fun setMissionMark(dataList: ArrayList<TrashLocationData>) {
-        for (data in dataList) {
-            val marker = MapPOIItem()
-            marker.apply {
-                itemName = data.trashName
-                mapPoint = MapPoint.mapPointWithGeoCoord(data.latitude, data.longitude)
-                //markerType = MapPOIItem.MarkerType.BluePin
-                selectedMarkerType = MapPOIItem.MarkerType.RedPin
-            }
-            mapView.addPOIItem(marker)
-        }
     }
     // 로그 버튼 받아오기 이슈..
     override fun onBottomSheetDismissed(data: Boolean) {
@@ -1114,52 +1055,6 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
         dialog.setCancelable(false)
         dialog.show()
     }
-
-    private fun recordTracking() {
-
-        val lm: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        val userNowLocation: Location? = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-        //위도 , 경도
-        val uLatitude = userNowLocation?.latitude
-        val uLongitude = userNowLocation?.longitude
-        val uNowPosition = MapPoint.mapPointWithGeoCoord(uLatitude!!, uLongitude!!)
-
-        if (uNowPosition != null) {
-            //centerPoint=location
-            //currentLocationMarker.moveWithAnimation(uNowPosition,false)
-            //currentLocationMarker.alpha=1f
-            //if(mapView != null){
-            //    mapView.setMapCenterPoint(
-            //        MapPoint.mapPointWithGeoCoord(
-            //            uNowPosition.mapPointGeoCoord.latitude,
-            //            uNowPosition.mapPointGeoCoord.longitude
-            //        ), false
-            //    )
-            //}
-            val now = Location("now")
-            now.latitude=uNowPosition.mapPointGeoCoord.latitude
-            now.longitude=uNowPosition.mapPointGeoCoord.longitude
-
-            updateDistance(now)
-
-            // 위치가 변경될 때마다 경로 정보를 리스트에 추가
-            val userPosition = MapPoint.mapPointWithGeoCoord(uNowPosition.mapPointGeoCoord.latitude,
-                uNowPosition.mapPointGeoCoord.longitude)
-            path.add(userPosition)
-
-            // 폴리라인 업데이트
-            //updatePathPolyline()
-
-            // 기타 필요한 작업 수행...
-        }
-
-
-        System.out.println(uLatitude.toString()+uLongitude.toString()+"하하하하")
-
-
-
-    }
-
     private fun updateTimer(elapsedTime: Int) {
         val seconds = (elapsedTime / 1000)
         val minutes = seconds / 60
@@ -1207,43 +1102,19 @@ class MapActivity : AppCompatActivity(), CustomBottomSheetFragment.BottomSheetLi
 
         // 폴리라인 스타일 설정
         mapPolyline.lineColor = Color.argb(128, 0, 255, 0) // 적절한 색상 및 투명도 지정
-       // mapPolyline.= 5 // 폴리라인 두께 설정
+        // mapPolyline.= 5 // 폴리라인 두께 설정
 
         // 지도에 폴리라인 추가
         mapView.addPolyline(mapPolyline)
     }
 
-    private fun createCustomMarker(mapView: MapView){
-        val customMarker = MapPOIItem()
-        customMarker.itemName = "Custom Marker"
-        customMarker.tag = 1
-
-    }
-
-    fun getKakaoMapHashKey(context: Context) { //카카오 해시 값 얻는 함수
-        try {
-            val packageName = context.packageName
-            val packageInfo = context.packageManager.getPackageInfo(
-                packageName,
-                PackageManager.GET_SIGNATURES
-            )
-            for (signature in packageInfo.signatures) {
-                val md = getInstance("SHA")
-                md.update(signature.toByteArray())
-                val hashKey = Base64.encodeToString(md.digest(), Base64.NO_WRAP)
-                Log.d("KakaoMap Hash Key", hashKey)
-            }
-        } catch (e: Exception) {
-            Log.e("KakaoMap Hash Key", "Error: ${e.message}")
-        }
-    }
     //문자->이미지 형태로 바꾸기
     fun decodeBase64ToBitmap(base64String: String): Bitmap? {
         try {
             // 문자 바꾸기(POST 방식으로 값 읽고 쓰면서 값이 바뀌어서 저장됨)
             val cleanBase64 = base64String.replace("//", "")
 
-            val decodedBytes = Base64.decode(cleanBase64, Base64.DEFAULT)
+            val decodedBytes = Base64.decode(base64String, Base64.DEFAULT)
             return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
         } catch (e: Exception) {
             e.printStackTrace()

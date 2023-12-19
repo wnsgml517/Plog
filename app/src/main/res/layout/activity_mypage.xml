@@ -67,7 +67,7 @@
             android:layout_below="@id/logoImageView"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center"
-            app:cardBackgroundColor="#9E645FEA"
+            app:cardBackgroundColor="#9E678F5E"
             app:cardCornerRadius="90dp"
             app:cardElevation="0dp">
 
@@ -98,7 +98,7 @@
                         android:layout_height="match_parent"
                         android:layout_gravity="center_horizontal"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/zzang" />
+                        android:src="@drawable/user_solid" />
 
                 </androidx.cardview.widget.CardView>
 

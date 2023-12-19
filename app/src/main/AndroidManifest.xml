@@ -45,6 +45,9 @@
         <activity android:name=".activity.PlogActivity"
             android:exported="true">
         </activity>
+        <activity android:name=".activity.EditActivity"
+            android:exported="true">
+        </activity>
 
     </application>
 
